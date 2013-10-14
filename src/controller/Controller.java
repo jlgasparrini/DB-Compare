@@ -1,5 +1,6 @@
 package controller;
 
+import model.Comparator;
 import model.DBConnection;
 import view.View;
 
@@ -7,6 +8,7 @@ public class Controller {
 	DBConnection firstInstance;
 	DBConnection secondInstance;
 	View view;
+	Comparator comp;
 	static Controller instance;
 
 	public static Controller getInstance() {
@@ -41,7 +43,8 @@ public class Controller {
 		if (firstInstance != null && secondInstance != null)
 			if (firstInstance.getStatusConnection() == 0
 					&& secondInstance.getStatusConnection() == 0) {
-				System.out.println("COMPARAR!!");
+				this.comp = new Comparator(firstInstance, secondInstance);
+				view.addText(this.comp.runComparison());
 				return;
 			}
 		view.clearText();

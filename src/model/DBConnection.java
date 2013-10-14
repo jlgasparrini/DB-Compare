@@ -6,13 +6,19 @@ import java.sql.SQLException;
 
 import org.postgresql.util.PSQLException;
 
+/**
+ * @authors Gasparrini - Torletti 
+ *
+ */
 public class DBConnection {
 
 	private String driver = "org.postgresql.Driver";
 	private String dataBase;
+	private String user;
+	private String password;
 	private String url = "jdbc:postgresql://localhost:5432/";
-	private static java.sql.Connection con;
-	private static int statusConnection;
+	private java.sql.Connection con;
+	private int statusConnection;
 
 	/**
 	 * Class constructor
@@ -23,11 +29,11 @@ public class DBConnection {
 	 *            "user name of the database to connect"
 	 * @param password
 	 *            "password of the database to connect"
-	 * @param statusConnection
-	 *            "currently status of connection of my database"
 	 */
 	public DBConnection(String user, String password, String dataBase) {
 		this.dataBase = dataBase;
+		this.user = user;
+		this.password = password;
 		try {
 			// Load the driver.
 			Class.forName(driver);
@@ -43,21 +49,41 @@ public class DBConnection {
 		}
 	}
 
+	/**
+	 * @return the currently  status of this connection. 
+	 * 0 - Right connection.
+	 * 1 - ERROR: Problem with the driver connection.
+	 * 2 - ERROR: Database not founded.  
+	 */
 	public int getStatusConnection() {
 		return statusConnection;
 	}
 
 	/**
-	 * Returns the connection of database.
+	 * @return the connection of database.
 	 */
 	public Connection getConnection() {
 		return con;
 	}
 
 	/**
-	 * Return the database's name.
+	 * @return the database's name.
 	 */
 	public String getBd() {
 		return dataBase;
+	}
+	
+	/**
+	 * @return the user of this connection.
+	 */
+	public String getUser() {
+		return user;
+	}
+	
+	/**
+	 * @return the password of the user.
+	 */
+	public String getPassword() {
+		return password;
 	}
 }

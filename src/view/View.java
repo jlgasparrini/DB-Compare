@@ -183,6 +183,7 @@ public class View extends JFrame {
 
 		textArea_1 = new TextArea();
 		textArea_1.setBounds(0, 0, 647, 237);
+		textArea_1.setEditable(false);
 		panel_3.add(textArea_1);
 
 		JButton btnComparar = new JButton("COMPARAR");
