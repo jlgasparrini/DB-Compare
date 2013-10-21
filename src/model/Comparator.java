@@ -34,23 +34,23 @@ public class Comparator {
 		loadTables(this.secondDB, this.tablesSecondDB);
 	}
 
-	@SuppressWarnings("unchecked")
 	public String runComparison() {
-		HashSet<String> aux1 = (HashSet<String>) this.tablesFirstDB.clone();
-		HashSet<String> aux2 = (HashSet<String>) this.tablesSecondDB.clone();
-		compareWithDB(this.firstDB, aux1, this.secondDB, aux2);
-		compareWithDB(this.secondDB, aux2, this.firstDB, aux1);
+		compareWithDB(this.firstDB, this.tablesFirstDB, this.secondDB, this.tablesSecondDB);
+		compareWithDB(this.secondDB, this.tablesSecondDB, this.firstDB, this.tablesFirstDB);
 		return this.result;
 	}
 
+	@SuppressWarnings("unused")
 	private void compareWithDB(DBConnection firstDB,
 			HashSet<String> tablesFirstDB, DBConnection secondDB,
 			HashSet<String> tablesSecondDB) {
-		for (Iterator<String> iterator = tablesFirstDB.iterator(); iterator
+		HashSet<String> aux1 = (HashSet<String>) tablesFirstDB.clone();
+		HashSet<String> aux2 = (HashSet<String>) tablesSecondDB.clone();
+		for (Iterator<String> iterator = aux1.iterator(); iterator
 				.hasNext();) {
 			String first = (String) iterator.next();
 			boolean flag = false;
-			for (Iterator<String> iterator2 = tablesSecondDB.iterator(); iterator2
+			for (Iterator<String> iterator2 = aux2.iterator(); iterator2
 					.hasNext();) {
 				String second = (String) iterator2.next();
 				if (!flag)
@@ -62,7 +62,7 @@ public class Comparator {
 			} else {
 				this.result += "Las bases de datos poseen la tabla \"" + first
 						+ "\"\n";
-				tablesSecondDB.remove(first);
+				aux2.remove(first);
 				this.result += loadDifferences(first);
 			}
 		}
@@ -72,9 +72,8 @@ public class Comparator {
 		ResultSet res = DBConnection.preparateConsult(firstDB, Querys.attributesFromTableQuery(firstDB.getBd(), table));
 		try {
 			while (res.next()){
-				System.out.println("DSJADSJKLAHADSJKLDHASKLDHASJKL");
-				System.out.println(res.getString(1));
-				System.out.println(res.getString(2));
+				//Aca hay que ir verificando los campos de las tablas!!
+				//y mostrarlos en la ventanita!!
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -94,17 +93,6 @@ public class Comparator {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private ResultSet getAttributesFromTable(String table) {
-		return null;
-	}
-
-	private String tableCompare(HashSet<String> tablesDB1,
-			HashSet<String> tablesDB2) {
-		String aux = "";
-
-		return aux;
 	}
 
 }
