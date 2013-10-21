@@ -5,11 +5,11 @@ import model.DBConnection;
 import view.View;
 
 public class Controller {
-	DBConnection firstInstance;
-	DBConnection secondInstance;
-	View view;
-	Comparator comp;
-	static Controller instance;
+	private DBConnection firstInstance;
+	private DBConnection secondInstance;
+	private View view;
+	private Comparator comp;
+	private static Controller instance;
 
 	public static Controller getInstance() {
 		if (instance == null)
@@ -19,24 +19,13 @@ public class Controller {
 
 	public void connectBD(String user, String password, String DB, int instance) {
 		if (instance == 1) {
-			if (firstInstance == null) {
-				firstInstance = new DBConnection(user, password, DB);
-			} else {
-				view.addText("Base de Datos \"" + DB
-						+ "\" ya se encuentra conectada.");
-			}
+			firstInstance = new DBConnection(user, password, DB);
 			controlStatus(firstInstance);
 		}
 		if (instance == 2) {
-			if (secondInstance == null) {
-				secondInstance = new DBConnection(user, password, DB);
-			} else {
-				view.addText("Base de Datos \"" + DB
-						+ "\" ya se encuentra conectada.");
-			}
+			secondInstance = new DBConnection(user, password, DB);
 			controlStatus(secondInstance);
 		}
-
 	}
 
 	public void Compare() {
@@ -62,11 +51,15 @@ public class Controller {
 			view.addText("Base de Datos \"" + DB + "\" conectada.");
 		}
 		if (status == 1) {
-			view.addText("ERROR: fallo conexion al cargar el driver en la base de datos.");
-			c = null;
+			view.addText("ERROR: No se encontró el driver de la DB.");
+			if (c.getBd().compareTo(this.firstInstance.getBd()) == 0) {
+				this.firstInstance = null;
+			}
+			else
+				this.secondInstance = null;
 		}
 		if (status == 2) {
-			view.addText("ERROR: fallo la conexion al intentar obtener la base de datos \""
+			view.addText("ERROR: No pudo establecerse la conexion con la base de datos \""
 					+ DB + "\".");
 			c = null;
 		}
