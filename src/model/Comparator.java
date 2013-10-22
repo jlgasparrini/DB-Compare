@@ -18,6 +18,14 @@ public class Comparator {
 	HashSet<String> tablesSecondDB;
 	String result;
 
+	
+	/**
+	 * @param db1
+	 * @param db2
+	 * 
+	 * Class constructor.
+	 * 		Take two databases and load its data in my structures.
+	 */
 	public Comparator(DBConnection db1, DBConnection db2) {
 		this.firstDB = db1;
 		this.secondDB = db2;
@@ -40,7 +48,7 @@ public class Comparator {
 		return this.result;
 	}
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings("unchecked")
 	private void compareWithDB(DBConnection firstDB,
 			HashSet<String> tablesFirstDB, DBConnection secondDB,
 			HashSet<String> tablesSecondDB) {
