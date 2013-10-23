@@ -1,5 +1,9 @@
 package utils;
 
+/**
+ * @author Gasparrini - Torletti.
+ *
+ */
 public class Querys {
 
 	/**

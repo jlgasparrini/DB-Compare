@@ -4,6 +4,10 @@ import model.Comparator;
 import model.DBConnection;
 import view.View;
 
+/**
+ * @author Gasparrini - Torletti
+ *
+ */
 public class Controller {
 	private DBConnection firstInstance;
 	private DBConnection secondInstance;

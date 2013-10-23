@@ -84,6 +84,11 @@ public class DBConnection {
 		return password;
 	}
 
+	/**
+	 * @param db
+	 * @param query
+	 * @return the result of the query "query" in the database "db".
+	 */
 	public static ResultSet preparateConsult(DBConnection db, String query) {
 		PreparedStatement p;
 		ResultSet r = null;

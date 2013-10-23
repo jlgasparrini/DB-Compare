@@ -1,5 +1,9 @@
 import view.View;
 
+/**
+ * @author Gasparrini - Torletti.
+ *
+ */
 public class Main {
 
 	/**

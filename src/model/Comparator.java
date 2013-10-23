@@ -8,6 +8,10 @@ import java.util.Iterator;
 
 import utils.Querys;
 
+/**
+ * @author Gasparrini - Torletti.
+ *
+ */
 public class Comparator {
 
 	DBConnection firstDB;
@@ -42,12 +46,23 @@ public class Comparator {
 		loadTables(this.secondDB, this.tablesSecondDB);
 	}
 
+	/**
+	 * @return a string with the differences between two databases.
+	 */
 	public String runComparison() {
 		compareWithDB(this.firstDB, this.tablesFirstDB, this.secondDB, this.tablesSecondDB);
 		compareWithDB(this.secondDB, this.tablesSecondDB, this.firstDB, this.tablesFirstDB);
 		return this.result;
 	}
 
+	/**
+	 * @param firstDB
+	 * @param tablesFirstDB
+	 * @param secondDB
+	 * @param tablesSecondDB
+	 * 
+	 * Compare the tables of the database "firstDB" and "secondDB", and takes its respective tables.
+	 */
 	@SuppressWarnings("unchecked")
 	private void compareWithDB(DBConnection firstDB,
 			HashSet<String> tablesFirstDB, DBConnection secondDB,
@@ -71,24 +86,17 @@ public class Comparator {
 				this.result += "Las bases de datos poseen la tabla \"" + first
 						+ "\"\n";
 				aux2.remove(first);
-				this.result += loadDifferences(first);
+				//this.result += loadDifferences(first);
 			}
 		}
 	}
 
-	private String loadDifferences(String table) {
-		ResultSet res = DBConnection.preparateConsult(firstDB, Querys.attributesFromTableQuery(firstDB.getBd(), table));
-		try {
-			while (res.next()){
-				//Aca hay que ir verificando los campos de las tablas!!
-				//y mostrarlos en la ventanita!!
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
+	/**
+	 * @param connection
+	 * @param tables
+	 * 
+	 * 	Load all tables of the database "connection" in HashSet "tables".
+	 */
 	private void loadTables(DBConnection connection, HashSet<String> tables) {
 		ResultSet result = DBConnection.preparateConsult(connection,
 				Querys.tablaQuery());
