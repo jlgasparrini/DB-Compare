@@ -39,6 +39,10 @@ public class View extends JFrame {
 	private JButton button;
 	private final TextArea textArea_1;
 	private Controller controller;
+	private JTextField txtEsquema;
+	private JTextField textField_1;
+	private JTextField textField_3;
+	private JTextField textField_5;
 
 	/**
 	 * Create the frame.
@@ -56,12 +60,12 @@ public class View extends JFrame {
 		contentPane.setLayout(null);
 
 		JPanel panel = new JPanel();
-		panel.setBounds(0, 0, 647, 135);
+		panel.setBounds(0, 0, 647, 148);
 		contentPane.add(panel);
 		panel.setLayout(null);
 
 		JPanel panel_1 = new JPanel();
-		panel_1.setBounds(0, 0, 303, 132);
+		panel_1.setBounds(0, 0, 303, 148);
 		panel.add(panel_1);
 		panel_1.setLayout(null);
 
@@ -102,6 +106,18 @@ public class View extends JFrame {
 		textField_2.setBounds(118, 76, 143, 20);
 		panel_1.add(textField_2);
 		textField_2.setColumns(10);
+		
+		txtEsquema = new JTextField();
+		txtEsquema.setText("  ESQUEMA:");
+		txtEsquema.setEditable(false);
+		txtEsquema.setColumns(10);
+		txtEsquema.setBounds(10, 98, 108, 20);
+		panel_1.add(txtEsquema);
+		
+		textField_1 = new JTextField();
+		textField_1.setColumns(10);
+		textField_1.setBounds(118, 98, 143, 20);
+		panel_1.add(textField_1);
 
 		passwordField = new JPasswordField();
 		passwordField.setBounds(118, 53, 143, 20);
@@ -112,15 +128,15 @@ public class View extends JFrame {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
 				controller.connectBD(textField.getText(),
-						passwordField.getText(), textField_2.getText(), 1);
+						passwordField.getText(), textField_2.getText(), textField_1.getText(),1);
 			}
 		});
-		btnConectar.setBounds(69, 109, 108, 23);
+		btnConectar.setBounds(74, 129, 108, 18);
 		panel_1.add(btnConectar);
-
+		
 		panel_2 = new JPanel();
 		panel_2.setLayout(null);
-		panel_2.setBounds(325, 0, 312, 132);
+		panel_2.setBounds(325, 0, 312, 148);
 		panel.add(panel_2);
 
 		txtBaseDeDatos_1 = new JTextField();
@@ -164,18 +180,30 @@ public class View extends JFrame {
 		passwordField_1 = new JPasswordField();
 		passwordField_1.setBounds(118, 53, 141, 20);
 		panel_2.add(passwordField_1);
+		
+		textField_3 = new JTextField();
+		textField_3.setText("  ESQUEMA:");
+		textField_3.setEditable(false);
+		textField_3.setColumns(10);
+		textField_3.setBounds(10, 97, 110, 20);
+		panel_2.add(textField_3);
+		
+		textField_5 = new JTextField();
+		textField_5.setColumns(10);
+		textField_5.setBounds(118, 97, 141, 20);
+		panel_2.add(textField_5);
 
 		button = new JButton("CONECTAR");
 		button.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
 				controller.connectBD(textField_4.getText(),
-						passwordField_1.getText(), textField_7.getText(), 2);
+						passwordField_1.getText(), textField_7.getText(), textField_5.getText(),2);
 			}
 		});
-		button.setBounds(71, 109, 110, 23);
+		button.setBounds(72, 128, 110, 19);
 		panel_2.add(button);
-
+		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBounds(0, 148, 647, 275);
 		contentPane.add(panel_3);

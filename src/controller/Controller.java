@@ -21,13 +21,13 @@ public class Controller {
 		return instance;
 	}
 
-	public void connectBD(String user, String password, String DB, int instance) {
+	public void connectBD(String user, String password, String DB, String schema, int instance) {
 		if (instance == 1) {
-			firstInstance = new DBConnection(user, password, DB);
+			firstInstance = new DBConnection(user, password, DB, schema);
 			controlStatus(firstInstance);
 		}
 		if (instance == 2) {
-			secondInstance = new DBConnection(user, password, DB);
+			secondInstance = new DBConnection(user, password, DB, schema);
 			controlStatus(secondInstance);
 		}
 	}
@@ -52,7 +52,7 @@ public class Controller {
 		int status = c.getStatusConnection();
 		String DB = c.getBd();
 		if (status == 0) {
-			view.addText("Base de Datos \"" + DB + "\" conectada.");
+			view.addText("Base de Datos \"" + DB + "\" conectada al esquema "+c.getSchema()+".");
 		}
 		if (status == 1) {
 			view.addText("ERROR: No se encontró el driver de la DB.");

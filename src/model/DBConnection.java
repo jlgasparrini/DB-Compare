@@ -13,6 +13,7 @@ import java.sql.SQLException;
 public class DBConnection {
 
 	private String driver = "org.postgresql.Driver";
+	private String schema;
 	private String dataBase;
 	private String user;
 	private String password;
@@ -30,15 +31,15 @@ public class DBConnection {
 	 * @param password
 	 *            "password of the database to connect"
 	 */
-	public DBConnection(String user, String password, String dataBase) {
+	public DBConnection(String user, String password, String dataBase, String schema) {
 		this.dataBase = dataBase;
 		this.user = user;
-		this.password = password;
+		this.schema = schema;
 		try {
 			// Load the driver.
 			Class.forName(driver);
 			// Getting a connection.
-			conn = DriverManager.getConnection(url, user, password);
+			conn = DriverManager.getConnection(url+this.dataBase, user, password);
 			statusConnection = 0; // Rigth connection.
 		} catch (ClassNotFoundException e) {
 			statusConnection = 1; // Fail to load the driver.
@@ -82,6 +83,14 @@ public class DBConnection {
 	 */
 	public String getPassword() {
 		return password;
+	}
+	
+	/**
+	 * retorna el esquema a comparar de la base de datos
+	 * @return String	"representa el nombre del esquema a comparar"
+	 */
+	public String getSchema(){
+		return this.schema;
 	}
 
 	/**
