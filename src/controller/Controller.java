@@ -50,13 +50,13 @@ public class Controller {
 
 	public void controlStatus(DBConnection c) {
 		int status = c.getStatusConnection();
-		String DB = c.getBd();
+		String DB = c.getDb();
 		if (status == 0) {
 			view.addText("Base de Datos \"" + DB + "\" conectada al esquema "+c.getSchema()+".");
 		}
 		if (status == 1) {
 			view.addText("ERROR: No se encontró el driver de la DB.");
-			if (c.getBd().compareTo(this.firstInstance.getBd()) == 0) {
+			if (c.getDb().compareTo(this.firstInstance.getDb()) == 0) {
 				this.firstInstance = null;
 			}
 			else

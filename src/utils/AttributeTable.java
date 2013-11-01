@@ -25,4 +25,8 @@ public class AttributeTable {
 		}
 		return false;
 	}
+	
+	public String toString(){
+		return "("+this.name+", "+this.type+")";
+	}
 }

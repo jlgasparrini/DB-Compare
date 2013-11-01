@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import utils.Querys;
+
 /**
  * @authors Gasparrini - Torletti
  * 
@@ -40,7 +42,8 @@ public class DBConnection {
 			Class.forName(driver);
 			// Getting a connection.
 			conn = DriverManager.getConnection(url+this.dataBase, user, password);
-			statusConnection = 0; // Rigth connection.
+			ResultSet r = preparateConsult(this, Querys.existsSchema(schema));
+			statusConnection = (r.next())?0:1; // Rigth connection.
 		} catch (ClassNotFoundException e) {
 			statusConnection = 1; // Fail to load the driver.
 		} catch (SQLException e) {
@@ -67,7 +70,7 @@ public class DBConnection {
 	/**
 	 * @return the database's name.
 	 */
-	public String getBd() {
+	public String getDb() {
 		return dataBase;
 	}
 
