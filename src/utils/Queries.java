@@ -43,15 +43,15 @@ public class Queries {
 	 * @return HashSet<String>
 	 */
 	public static HashSet<String> getTables(DatabaseMetaData conn, String schema) {
-		HashSet<String> tables = new HashSet<String>();
+		HashSet<String> set = new HashSet<String>();
 		try {
 			ResultSet res = conn.getConnection().getMetaData().getTables(conn.getConnection().getCatalog(), schema, null, new String[] { "TABLE" });
 			while (res.next())
-				tables.add(res.getString(3)); //Nombre de la tabla.
+				set.add(res.getString(3)); //Nombre de la tabla.
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return tables;
+		return set;
 	}
 
 	/**
@@ -60,12 +60,14 @@ public class Queries {
 	 * @param tableName
 	 * @param attributes
 	 */
-	public static HashSet<AttributeTable> getAttributes(DatabaseMetaData conn, String schema, String tableName) {
-		HashSet<AttributeTable> attributes = new HashSet<AttributeTable>();
+	public static HashSet<TuplesOfStrings> getAttributes(DatabaseMetaData conn, String schema, String tableName) {
+		HashSet<TuplesOfStrings> attributes = new HashSet<TuplesOfStrings>();
 		try {
 			ResultSet result = conn.getColumns(conn.getConnection().getCatalog(), schema, tableName, "%");
 			while (result.next()) {
-				AttributeTable tmp = new AttributeTable(result.getString(4), result.getString(6));
+				TuplesOfStrings tmp = new TuplesOfStrings(2);
+				tmp.setIndex(0, result.getString(4));
+				tmp.setIndex(1, result.getString(6));
 				attributes.add(tmp);
 			}
 		} catch (SQLException e) {
@@ -102,16 +104,17 @@ public class Queries {
 	 * @param tableName
 	 * @return HashSet<String>
 	 */
-	public static HashSet<String> getForeignKeys(DatabaseMetaData conn, String schema, String tableName) {
-		HashSet<String> res = new HashSet<String>();
+	public static HashSet<TuplesOfStrings> getForeignKeys(DatabaseMetaData conn, String schema, String tableName) {
+		HashSet<TuplesOfStrings> res = new HashSet<TuplesOfStrings>();
 		try {
 			ResultSet result = conn.getConnection().getMetaData().getImportedKeys(conn.getConnection().getCatalog(), schema, tableName);
 			while (result.next()) {
-				String aux = result.getString(12) + " - "; // Guardo el nombre del constraint.
-				aux += result.getString(8) + " - "; // Nombre del atributo que tiene la referencia hacia otra tabla.
-				aux += result.getString(3) + " - ";// Tabla a la que hago referencia...
-				aux += result.getString(4);// Nombre del atritributo de la tabla a la que hago referencia
-				res.add(aux);
+				TuplesOfStrings tmp = new TuplesOfStrings(4);
+				tmp.setIndex(0, result.getString(12)); //nombre de constraign
+				tmp.setIndex(1, result.getString(8)); //atributo tuyo 
+				tmp.setIndex(2, result.getString(3)); // tabla referencia
+				tmp.setIndex(3, result.getString(4)); // atributo referencia
+				res.add(tmp);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -127,14 +130,15 @@ public class Queries {
 	 * @param tableName
 	 * @return HashSet<String>
 	 */
-	public static HashSet<String> getIndexs(DatabaseMetaData conn, String schema, String tableName) {
-		HashSet<String> res = new HashSet<String>();
+	public static HashSet<TuplesOfStrings> getIndexs(DatabaseMetaData conn, String schema, String tableName) {
+		HashSet<TuplesOfStrings> res = new HashSet<TuplesOfStrings>();
 		try {
 			ResultSet indexInformation = conn.getIndexInfo(conn.getConnection().getCatalog(), schema, tableName, false, false);
 			while (indexInformation.next()) {
-				String aux = indexInformation.getString("INDEX_NAME") + " - "; // Nombre del indice.
-				aux += indexInformation.getString("COLUMN_NAME"); // Nombre del atributo al cual esta aplicado el indice.
-				res.add(aux);
+				TuplesOfStrings tmp = new TuplesOfStrings(2);
+				tmp.setIndex(0, indexInformation.getString("INDEX_NAME")); // Nombre del indice.
+				tmp.setIndex(1, indexInformation.getString("COLUMN_NAME")); // Nombre del atributo al cual esta aplicado el indice.
+				res.add(tmp);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -148,18 +152,19 @@ public class Queries {
 	 * @param schema
 	 * @return HashSet<String>
 	 */
-	public static HashSet<String> getTriggers(DatabaseMetaData conn, String schema){
-		HashSet<String> result = new HashSet<String>();
+	public static HashSet<TuplesOfStrings> getTriggers(DatabaseMetaData conn, String schema){
+		HashSet<TuplesOfStrings> result = new HashSet<TuplesOfStrings>();
 		try {
 			//Ejecuto la consulta en la db.
 			ResultSet res = conn.getConnection().prepareCall(Queries.getTriggerQuery(schema)).executeQuery();
 			while (res.next()){
-				String aux = res.getString(1); // Nombre del trigger.
-				aux+= res.getString(2); // BEFORE o AFTER (en que momento se ejecuta el trigger).
-				aux+= res.getString(3); // Operacion que se realiza sobre la tabla (por ejemlo UPDATE)
-				aux+= res.getString(4); // Tabla sobre la que se esta analizando la ejecucion del trigger.
-				aux+= res.getString(5); // Accion que realiza el trigger
-				result.add(aux);
+				TuplesOfStrings tmp = new TuplesOfStrings(5);
+				tmp.setIndex(0, res.getString(1)); // Nombre del trigger.
+				tmp.setIndex(1, res.getString(2)); // BEFORE o AFTER (en que momento se ejecuta el trigger).
+				tmp.setIndex(2, res.getString(3)); // Operacion que se realiza sobre la tabla (por ejemlo UPDATE)
+				tmp.setIndex(3, res.getString(4)); // Tabla sobre la que se esta analizando la ejecucion del trigger.
+				tmp.setIndex(3, res.getString(5)); // Accion que realiza el trigger
+				result.add(tmp);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import utils.AttributeTable;
 import utils.Queries;
+import utils.TuplesOfStrings;
 
 /**
  * @author Gasparrini - Torletti.
@@ -45,10 +45,10 @@ public class Comparator {
 		HashSet<String> schema2 = Queries.getTables(this.metaDataSecondDB, this.secondDB.getSchema());
 		String result = null;
 		System.out.println(Queries.getIndexs(this.metaDataSecondDB, "educational_center", "asiste"));
-		result = compareTableNames(schema1, schema2);
+		result = compareTableNames(schema1, schema2);  
 		if (!schema1.isEmpty())
-			result += compareTableAttributes(schema1);
-		if (result == null)
+			result += compareTablesEqualsName(schema1);
+		if (result == "")
 			result = "Las bases de datos de los esquemas son iguales";
 		return result;
 	}
@@ -98,10 +98,8 @@ public class Comparator {
 
 			}
 		}
-		if (different) {
+		if (different)
 			tmp += "\n";
-			different = false;
-		}
 		return tmp;
 	}
 
@@ -112,87 +110,110 @@ public class Comparator {
 	 *            "set containing the names of the tables with the same name in both schemes"
 	 * @return String "containing the differences"
 	 */
-	@SuppressWarnings("unchecked")
-	private String compareTableAttributes(HashSet<String> schema) {
+	private String compareTablesEqualsName(HashSet<String> schema) {
 		String tmp = "";
 		boolean different = false; // determines whether early printed legend
-		// set that stored the information in the columns of the current table
-		HashSet<AttributeTable> table1 = new HashSet<AttributeTable>();
-		HashSet<AttributeTable> table2 = new HashSet<AttributeTable>();
 		// compares the columns of the tables with the same name
-		String tableName;
 		for (Iterator<String> iterator = schema.iterator(); iterator.hasNext();) {
-			tableName = (String) iterator.next();
-			// get the columns information of the table concurrently
-			table1 = Queries.getAttributes(this.metaDataFirstDB, this.firstDB.getSchema(), tableName);
-			table2 = Queries.getAttributes(this.metaDataSecondDB, this.secondDB.getSchema(), tableName);
-			AttributeTable attributeTable1;
-			AttributeTable attributeTable2;
-			// auxiliary sets used for the iteration
-			HashSet<AttributeTable> aux = (HashSet<AttributeTable>) table1
-					.clone();
-			HashSet<AttributeTable> aux2 = (HashSet<AttributeTable>) table2
-					.clone();
-			// compares the columns with the same name and remove the columns of
-			// the two sets
-			for (Iterator<AttributeTable> iterator2 = aux.iterator(); iterator2
-					.hasNext();) {
-				attributeTable1 = (AttributeTable) iterator2.next();
-
-				for (Iterator<AttributeTable> iterator3 = aux2.iterator(); iterator3
-						.hasNext();) {
-					attributeTable2 = (AttributeTable) iterator3.next();
-
-					if (attributeTable1.getName() == attributeTable2.getName()) {
-						if (attributeTable1.getType() != attributeTable2
-								.getType()) {
-							if (!different) {
-								tmp += "La tabla "
-										+ tableName
-										+ " que se encuentra en ambos esquemas, tiene de diferente: \n";
-								different = true;
-							}
-							tmp += "- La columna " + attributeTable1.getName()
-									+ " en el esquema " + firstDB.getSchema()
-									+ " el tipo es "
-									+ attributeTable1.getType()
-									+ " y en el esquema "
-									+ secondDB.getSchema() + " es de tipo "
-									+ attributeTable2.getType() + "\n";
-						}
-						table1.remove(attributeTable1);
-						table2.remove(attributeTable2);
-					}
-				}
-			}
-			if (!different && (!table1.isEmpty() || !table2.isEmpty())) {
-				tmp += "La tabla "
-						+ tableName
+			String tableName = (String) iterator.next();
+			//retorna las diferecias en los atributos de la tabla actual
+			String differencesInTheAttribute = compareTheAttributesOfTheTable(tableName);
+			String differencesInThePrimarykey = comparePrimaryKey(tableName);
+			if (!different && (differencesInTheAttribute != "" || differencesInThePrimarykey != "")){
+				tmp += "La tabla " + tableName
 						+ " que se encuentra en ambos esquemas, tiene de diferente: \n";
 				different = true;
 			}
-			// save the columns with distinct name in the first schema
-			for (Iterator<AttributeTable> iterator4 = table1.iterator(); iterator4
-					.hasNext();) {
-				attributeTable1 = (AttributeTable) iterator4.next();
-				tmp += "\t- La columna " + attributeTable1.getName()
-						+ " de tipo: " + attributeTable1.getType()
-						+ " solo se encuentra en la tabla " + tableName
-						+ " del esquema " + firstDB.getSchema() + "\n";
-			}
-			// save the columns with distinct name in the second schema
-			for (Iterator<AttributeTable> iterator5 = table2.iterator(); iterator5
-					.hasNext();) {
-				attributeTable2 = (AttributeTable) iterator5.next();
-				tmp += "\t- La columna " + attributeTable2.getName()
-						+ " de tipo: " + attributeTable2.getType()
-						+ " solo se encuentra en la tabla " + tableName
-						+ " del esquema " + secondDB.getSchema() + "\n";
-			}
-			table1.clear();
-			table2.clear();
-			different = false;
+			tmp+= differencesInTheAttribute + differencesInThePrimarykey;
 		}
+		return tmp;
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private String compareTheAttributesOfTheTable(String tableName){
+		String tmp = "";
+		// set that stored the information in the columns of the current table
+		HashSet<TuplesOfStrings> table1 = new HashSet<TuplesOfStrings>();
+		HashSet<TuplesOfStrings> table2 = new HashSet<TuplesOfStrings>();
+		// cargo los conjuntos con la informacion de los 
+		//atributos de la tabla pasada por parametro
+		table1 = Queries.getAttributes(metaDataFirstDB, firstDB.getSchema(), tableName);
+		table2 = Queries.getAttributes(metaDataSecondDB, secondDB.getSchema(), tableName);
+		// auxiliary sets used for the iteration
+		HashSet<TuplesOfStrings> aux = (HashSet<TuplesOfStrings>) table1.clone();
+		HashSet<TuplesOfStrings> aux2 = (HashSet<TuplesOfStrings>) table2.clone();
+		for (Iterator<TuplesOfStrings> iterator = aux.iterator(); iterator.hasNext();) {
+			TuplesOfStrings tupleOfAttribute1 = (TuplesOfStrings) iterator.next();
+
+			for (Iterator<TuplesOfStrings> iterator2 = aux2.iterator(); iterator2.hasNext();) {
+				TuplesOfStrings tupleOfAttribute2 = (TuplesOfStrings)  iterator2.next();
+				//comparo si los nombres de los atributos son iguales
+				if (tupleOfAttribute1.getIndex(0) == tupleOfAttribute2.getIndex(0)) {
+					//comparo si los atributos con mismo nombre, tienen distinto tipo
+					if (tupleOfAttribute1.getIndex(1) != tupleOfAttribute2.getIndex(1)) {
+						tmp += "- La columna " + tupleOfAttribute1.getIndex(0)
+								+ " en el esquema " + firstDB.getSchema()
+								+ " el tipo es "
+								+ tupleOfAttribute1.getIndex(1)
+								+ " y en el esquema "
+								+ secondDB.getSchema() + " es de tipo "
+								+ tupleOfAttribute2.getIndex(1) + "\n";
+					}
+					//elimino los atributos de ambos conjuntos, porque ya estan comparados
+					table1.remove(tupleOfAttribute1);
+					table2.remove(tupleOfAttribute2);
+				}
+			}
+		}
+		// save the columns with distinct name in the first schema
+		for (Iterator<TuplesOfStrings> iterator3 = table1.iterator(); iterator3.hasNext();) {
+			TuplesOfStrings tuple1 = (TuplesOfStrings) iterator3.next();
+			tmp += "\t- La columna " + tuple1.getIndex(0)
+					+ " de tipo: " + tuple1.getIndex(1)
+					+ " solo se encuentra en la tabla " + tableName
+					+ " del esquema " + firstDB.getSchema() + "\n";
+		}
+		// save the columns with distinct name in the second schema
+		for (Iterator<TuplesOfStrings> iterator4 = table2.iterator(); iterator4.hasNext();) {
+			TuplesOfStrings tuple2 = (TuplesOfStrings) iterator4.next();
+			tmp += "\t- La columna " + tuple2.getIndex(0)
+					+ " de tipo: " + tuple2.getIndex(1)
+					+ " solo se encuentra en la tabla " + tableName
+					+ " del esquema " + secondDB.getSchema() + "\n";
+		}
+		table1.clear();
+		table2.clear();
+		return tmp;
+	}
+	
+	private String comparePrimaryKey(String tableName){
+		String tmp = "";
+		HashSet<String> table1 = new HashSet<String>();
+		HashSet<String> table2 = new HashSet<String>();
+		// cargo los conjuntos con la informacion de los 
+		//atributos de la tabla pasada por parametro
+		table1 = Queries.getPrimaryKeys(metaDataFirstDB, firstDB.getSchema(), tableName);
+		table2 = Queries.getPrimaryKeys(metaDataSecondDB, secondDB.getSchema(), tableName);
+		//comparo las claves primarias del primer esquema con las del segundo
+		for (Iterator<String> iterator = table1.iterator(); iterator.hasNext();) {
+			String primaryKey1 = (String) iterator.next();
+			//si se encuentra en ambos esquemas la elimino del segundo
+			if(table2.contains(primaryKey1)){
+				table2.remove(primaryKey1);
+			}else //si se encuetra solo en el primer esquema, lo informo
+				tmp += "\t- La clave primaria " + primaryKey1 
+					+ " de la tabla " + tableName 
+					+ " solo se encuentra en el esquema " + firstDB.getSchema();
+		}
+		//informo las claves primarias que se encuentran unicamente en el segundo esquema
+		for (Iterator<String> iterator = table2.iterator(); iterator.hasNext();) {
+			String primaryKey2 = (String) iterator.next();
+			tmp += "\t- La clave primaria " + primaryKey2 
+					+ " de la tabla " + tableName 
+					+ " solo se encuentra en el esquema " + secondDB.getSchema();
+		}
+		
 		return tmp;
 	}
 }
