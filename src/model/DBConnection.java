@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import utils.Querys;
+import utils.Queries;
 
 /**
  * @authors Gasparrini - Torletti
@@ -15,16 +15,16 @@ import utils.Querys;
 public class DBConnection {
 
 	private String driver = "org.postgresql.Driver";
+	private String url = "jdbc:postgresql://localhost:5432/";
+	private java.sql.Connection conn;
 	private String schema;
 	private String dataBase;
 	private String user;
 	private String password;
-	private String url = "jdbc:postgresql://localhost:5432/";
-	private java.sql.Connection conn;
 	private int statusConnection;
 
 	/**
-	 * Class constructor
+	 * Constructor de la clase.
 	 * 
 	 * @param dataBase
 	 *            "name of database to connect"
@@ -42,7 +42,7 @@ public class DBConnection {
 			Class.forName(driver);
 			// Getting a connection.
 			conn = DriverManager.getConnection(url+this.dataBase, user, password);
-			ResultSet r = preparateConsult(this, Querys.existsSchema(schema));
+			ResultSet r = preparateConsult(this, Queries.existsSchema(schema));
 			statusConnection = (r.next())?0:1; // Rigth connection.
 		} catch (ClassNotFoundException e) {
 			statusConnection = 1; // Fail to load the driver.
@@ -52,28 +52,40 @@ public class DBConnection {
 	}
 
 	/**
-	 * @return the currently status of this connection. 0 - Right connection. 1
-	 *         - ERROR: Problem with the driver connection. 2 - ERROR: Database
-	 *         not founded.
+	 * Devuelve el estado de la conexion a la base de datos.
+	 *     0 - Conexion correcta.
+	 *     1 - Error con el driver o esquema no encontrado.
+	 *     2 - Error base de datos no encontrada.
+	 * @return int
 	 */
 	public int getStatusConnection() {
 		return statusConnection;
 	}
 
 	/**
-	 * @return the connection of database.
+	 * Devuelve la conexion de a la base de datos.
+	 * @return Connection
 	 */
 	public Connection getConnection() {
 		return conn;
 	}
 
 	/**
-	 * @return the database's name.
+	 * Devuelve la nombre de la base de datos.
+	 * @return String
 	 */
 	public String getDb() {
 		return dataBase;
 	}
-
+	
+	/**
+	 * Retorna el nombre del esquema.
+	 * @return String
+	 */
+	public String getSchema(){
+		return this.schema;
+	}
+	
 	/**
 	 * @return the user of this connection.
 	 */
@@ -82,24 +94,18 @@ public class DBConnection {
 	}
 
 	/**
-	 * @return the password of the user.
+	 * Devuelve la contrasenia del usuario.
+	 * @return String.
 	 */
 	public String getPassword() {
 		return password;
 	}
-	
-	/**
-	 * retorna el esquema a comparar de la base de datos
-	 * @return String	"representa el nombre del esquema a comparar"
-	 */
-	public String getSchema(){
-		return this.schema;
-	}
 
 	/**
+	 * Toma una conexion y un string y devuelve un ResultSet con la consulta de dicho string sobre la base de datos.
 	 * @param db
 	 * @param query
-	 * @return the result of the query "query" in the database "db".
+	 * @return ResultSet.
 	 */
 	public static ResultSet preparateConsult(DBConnection db, String query) {
 		PreparedStatement p;

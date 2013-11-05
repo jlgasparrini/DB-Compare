@@ -1,12 +1,12 @@
 package model;
 
 import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
 
 import utils.AttributeTable;
+import utils.Queries;
 
 /**
  * @author Gasparrini - Torletti.
@@ -20,18 +20,16 @@ public class Comparator {
 	DatabaseMetaData metaDataSecondDB;
 
 	/**
+	 * Constructor de la clase comparador.
 	 * @param db1
 	 * @param db2
-	 * 
-	 *            Class constructor. Take two databases and save this
-	 *            connections.
 	 */
 	public Comparator(DBConnection db1, DBConnection db2) {
 		this.firstDB = db1;
 		this.secondDB = db2;
 		try {
-			this.metaDataFirstDB = db1.getConnection().getMetaData();// trae las
-																		// metadatas
+			//Traigo las metadatas.
+			this.metaDataFirstDB = db1.getConnection().getMetaData();
 			this.metaDataSecondDB = db2.getConnection().getMetaData();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -43,105 +41,16 @@ public class Comparator {
 	 * @return the string with results of comparison.
 	 */
 	public String runComparison() {
-		HashSet<String> schema1 = new HashSet<String>();
-		HashSet<String> schema2 = new HashSet<String>();
+		HashSet<String> schema1 = Queries.getTables(this.metaDataFirstDB, this.firstDB.getSchema());
+		HashSet<String> schema2 = Queries.getTables(this.metaDataSecondDB, this.secondDB.getSchema());
 		String result = null;
-		loadTables(this.firstDB, schema1);
-		loadTables(this.secondDB, schema2);
+		System.out.println(Queries.getIndexs(this.metaDataSecondDB, "educational_center", "asiste"));
 		result = compareTableNames(schema1, schema2);
 		if (!schema1.isEmpty())
 			result += compareTableAttributes(schema1);
 		if (result == null)
 			result = "Las bases de datos de los esquemas son iguales";
 		return result;
-	}
-
-	/**
-	 * Load all tables of the database "connection" in HashSet "tables".
-	 * 
-	 * @param connection
-	 * @param tables
-	 * 
-	 */
-	private void loadTables(DBConnection connection, HashSet<String> tables) {
-		ResultSet result;
-		try {
-			result = connection
-					.getConnection()
-					.getMetaData()
-					.getTables(connection.getDb(), connection.getSchema(),
-							null, new String[] { "TABLE" });
-			while (result.next()) {
-				tables.add(result.getString(3));
-			}
-			System.out.println(primaryKeys(connection, "asiste"));
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private HashSet<String> primaryKeys(DBConnection conn, String tableName) {
-		ResultSet result;
-		HashSet<String> res = new HashSet<String>();
-		try {
-			result = conn.getConnection().getMetaData()
-					.getPrimaryKeys(conn.getDb(), conn.getSchema(), tableName);
-			while (result.next()) {
-					res.add(result.getString(4));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return res;
-	}
-
-	private HashSet<String> foreignKeys(DBConnection conn, String tableName) {
-		ResultSet result;
-		HashSet<String> res = new HashSet<String>();
-		try {
-			result = conn.getConnection().getMetaData().getImportedKeys(conn.getDb(), conn.getSchema(), tableName);
-			while (result.next()){
-				System.out.println("---------------");
-				System.out.println(result.getString(1));
-				System.out.println(result.getString(2));
-				System.out.println(result.getString(3));//Tabla a la que hace referencia la foreign key.
-				System.out.println(result.getString(4));//Atributo de la tabla a la cual hace referencia.
-				System.out.println(result.getString(5));
-				System.out.println(result.getString(6));
-				System.out.println(result.getString(7));
-				System.out.println(result.getString(8));
-				System.out.println(result.getString(9));
-				System.out.println(result.getString(10));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return res;
-	}
-
-	/**
-	 * 
-	 * @param connection
-	 * @param tableName
-	 * @param attributes
-	 */
-	private void loadAttributes(DBConnection connection, String tableName,
-			HashSet<AttributeTable> attributes) {
-		ResultSet result;
-		try {
-			result = connection
-					.getConnection()
-					.getMetaData()
-					.getColumns(connection.getDb(), connection.getSchema(),
-							tableName, "%");
-			while (result.next()) {
-				AttributeTable tmp = new AttributeTable(result.getString(4),
-						result.getString(6));
-				attributes.add(tmp);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -215,8 +124,8 @@ public class Comparator {
 		for (Iterator<String> iterator = schema.iterator(); iterator.hasNext();) {
 			tableName = (String) iterator.next();
 			// get the columns information of the table concurrently
-			loadAttributes(this.firstDB, tableName, table1);
-			loadAttributes(this.secondDB, tableName, table2);
+			table1 = Queries.getAttributes(this.metaDataFirstDB, this.firstDB.getSchema(), tableName);
+			table2 = Queries.getAttributes(this.metaDataSecondDB, this.secondDB.getSchema(), tableName);
 			AttributeTable attributeTable1;
 			AttributeTable attributeTable2;
 			// auxiliary sets used for the iteration

@@ -1,233 +1,275 @@
 package view;
 
 import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import controller.Controller;
-import java.awt.GridLayout;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import net.miginfocom.swing.MigLayout;
+import controller.Controller;
 
+/**
+ * @author Gasparrini - Torletti
+ * 
+ */
 public class View extends JFrame {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JTextField txtBaseDeDatos;
-	private JTextField txtUsuario;
-	private JTextField textField;
-	private JTextField txtContrasea;
-	private JTextField txtBaseDeDato;
-	private JTextField textField_2;
-	private JPasswordField passwordField;
-	private JPanel panel_2;
-	private JTextField txtBaseDeDatos_1;
-	private JTextField txtUsuario_1;
-	private JTextField textField_4;
-	private JTextField txtContrasea_1;
-	private JTextField txtBaseDeDato_1;
-	private JTextField textField_7;
-	private JPasswordField passwordField_1;
-	private JButton button;
-	private final TextArea textArea_1;
+	private JPanel panelPrincipal;
+	private JTextField titleBaseDeDatos1;
+	private JTextField labelUsuario1;
+	private JTextField usuarioBaseDeDatos1;
+	private JTextField labelContrasenia;
+	private JTextField labelBaseDeDatos1;
+	private JTextField baseDeDatos1;
+	private JPasswordField contraseniaBaseDeDatos1;
+	private JPanel panelBaseDeDatos2;
+	private JTextField titleBaseDeDatos2;
+	private JTextField labelUsuario2;
+	private JTextField usuarioBaseDeDatos2;
+	private JTextField labelContrasenia2;
+	private JTextField labelBaseDeDatos2;
+	private JTextField baseDeDatos2;
+	private JPasswordField contraseniaBaseDeDatos2;
+	private JButton botonConectar2;
+	private final TextArea textAreaResultados;
 	private Controller controller;
-	private JTextField txtEsquema;
-	private JTextField textField_1;
-	private JTextField textField_3;
-	private JTextField textField_5;
-	private JLabel label;
-	private JLabel label_2;
-	private JLabel label_5;
+	private JTextField labelEsquema1;
+	private JTextField esquema1;
+	private JTextField labelEsquema;
+	private JTextField esquema2;
+	private JLabel espacioEnBlanco1;
+	private JLabel espacioEnBlanco2;
+	private JLabel espacioEnBlanco4;
 
 	/**
-	 * Create the frame.
+	 * Constructor de la clase.
+	 * Me permite crear la ventana para interactuar con el usuario
 	 */
 	public View() {
+		// Construyo los paneles principales.................
 		this.controller = Controller.getInstance();
 		this.controller.setView(this);
-		setTitle("Comparador de base de datos");
+		setTitle("Comparador de dos bases de datos");
 		setBackground(Color.RED);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 663, 461);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
+		panelPrincipal = new JPanel();
+		panelPrincipal.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(panelPrincipal);
 
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(0, 2, 0, 0));
+		// Inicio panel de entradas.......
+		JPanel panelDeEntradas = new JPanel();
+		panelDeEntradas.setLayout(new GridLayout(0, 2, 0, 0));
 
-		JPanel panel_1 = new JPanel();
-		panel.add(panel_1);
-		panel_1.setLayout(new GridLayout(0, 2, 0, 0));
-		
-				txtBaseDeDatos = new JTextField();
-				txtBaseDeDatos.setEditable(false);
-				txtBaseDeDatos.setText("Base de datos 1");
-				panel_1.add(txtBaseDeDatos);
-				txtBaseDeDatos.setColumns(10);
-		
-		label = new JLabel("");
-		panel_1.add(label);
+		JPanel panelBaseDeDatos1 = new JPanel();
+		panelDeEntradas.add(panelBaseDeDatos1);
+		panelBaseDeDatos1.setLayout(new GridLayout(0, 2, 0, 0));
 
-		txtUsuario = new JTextField();
-		txtUsuario.setEditable(false);
-		txtUsuario.setText("  USUARIO:");
-		panel_1.add(txtUsuario);
-		txtUsuario.setColumns(10);
+		titleBaseDeDatos1 = new JTextField();
+		titleBaseDeDatos1.setEditable(false);
+		titleBaseDeDatos1.setText("Base de datos 1");
+		panelBaseDeDatos1.add(titleBaseDeDatos1);
+		titleBaseDeDatos1.setColumns(10);
 
-		textField = new JTextField();
-		panel_1.add(textField);
-		textField.setColumns(10);
+		espacioEnBlanco1 = new JLabel("");
+		panelBaseDeDatos1.add(espacioEnBlanco1);
 
-		txtContrasea = new JTextField();
-		txtContrasea.setEditable(false);
-		txtContrasea.setText("  CONTRASE\u00D1A:");
-		panel_1.add(txtContrasea);
-		txtContrasea.setColumns(10);
+		labelUsuario1 = new JTextField();
+		labelUsuario1.setEditable(false);
+		labelUsuario1.setText("  USUARIO:");
+		panelBaseDeDatos1.add(labelUsuario1);
+		labelUsuario1.setColumns(10);
 
-		passwordField = new JPasswordField();
-		panel_1.add(passwordField);
+		usuarioBaseDeDatos1 = new JTextField();
+		usuarioBaseDeDatos1.setText("postgres");
+		panelBaseDeDatos1.add(usuarioBaseDeDatos1);
+		usuarioBaseDeDatos1.setColumns(10);
 
-		JButton btnConectar = new JButton("CONECTAR");
-		btnConectar.addActionListener(new ActionListener() {
+		labelContrasenia = new JTextField();
+		labelContrasenia.setEditable(false);
+		labelContrasenia.setText("  CONTRASE\u00D1A:");
+		panelBaseDeDatos1.add(labelContrasenia);
+		labelContrasenia.setColumns(10);
+
+		contraseniaBaseDeDatos1 = new JPasswordField();
+		contraseniaBaseDeDatos1.setText("root");
+		panelBaseDeDatos1.add(contraseniaBaseDeDatos1);
+
+		labelBaseDeDatos1 = new JTextField();
+		labelBaseDeDatos1.setEditable(false);
+		labelBaseDeDatos1.setText("  BASE DE DATOS:");
+		panelBaseDeDatos1.add(labelBaseDeDatos1);
+		labelBaseDeDatos1.setColumns(10);
+
+		baseDeDatos1 = new JTextField();
+		baseDeDatos1.setText("postgres");
+		panelBaseDeDatos1.add(baseDeDatos1);
+		baseDeDatos1.setColumns(10);
+
+		labelEsquema1 = new JTextField();
+		labelEsquema1.setText("  ESQUEMA:");
+		labelEsquema1.setEditable(false);
+		labelEsquema1.setColumns(10);
+		panelBaseDeDatos1.add(labelEsquema1);
+
+		esquema1 = new JTextField();
+		esquema1.setColumns(10);
+		esquema1.setText("centro_educativo");
+		usuarioBaseDeDatos1.setText("postgres");
+		panelBaseDeDatos1.add(esquema1);
+
+		JButton botonConectar1 = new JButton("CONECTAR");
+		botonConectar1.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-				controller.connectBD("postgres", "root", "postgres", "educational_center", 1);
-				//controller.connectBD(textField.getText(),
-				//		passwordField.getText(), textField_2.getText(), textField_1.getText(),1);
+				controller.connectBD(usuarioBaseDeDatos1.getText(),
+						contraseniaBaseDeDatos1.getText(),
+						baseDeDatos1.getText(), esquema1.getText(), 1);
 			}
 		});
-				
-						txtBaseDeDato = new JTextField();
-						txtBaseDeDato.setEditable(false);
-						txtBaseDeDato.setText("  BASE DE DATOS:");
-						panel_1.add(txtBaseDeDato);
-						txtBaseDeDato.setColumns(10);
-		
-				textField_2 = new JTextField();
-				panel_1.add(textField_2);
-				textField_2.setColumns(10);
-		
-		txtEsquema = new JTextField();
-		txtEsquema.setText("  ESQUEMA:");
-		txtEsquema.setEditable(false);
-		txtEsquema.setColumns(10);
-		panel_1.add(txtEsquema);
-		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		panel_1.add(textField_1);
-		panel_1.add(btnConectar);
-		
-		panel_2 = new JPanel();
-		panel.add(panel_2);
-		panel_2.setLayout(new GridLayout(0, 2, 0, 0));
-		
-				txtBaseDeDatos_1 = new JTextField();
-				txtBaseDeDatos_1.setText("Base de datos 2");
-				txtBaseDeDatos_1.setEditable(false);
-				txtBaseDeDatos_1.setColumns(10);
-				panel_2.add(txtBaseDeDatos_1);
-		
-		label_2 = new JLabel("");
-		panel_2.add(label_2);
 
-		txtUsuario_1 = new JTextField();
-		txtUsuario_1.setText("  USUARIO:");
-		txtUsuario_1.setEditable(false);
-		txtUsuario_1.setColumns(10);
-		panel_2.add(txtUsuario_1);
-				
-						textField_7 = new JTextField();
-						textField_7.setColumns(10);
-						panel_2.add(textField_7);
-		
-				txtContrasea_1 = new JTextField();
-				txtContrasea_1.setText("  CONTRASE\u00D1A:");
-				txtContrasea_1.setEditable(false);
-				txtContrasea_1.setColumns(10);
-				panel_2.add(txtContrasea_1);
-						
-								passwordField_1 = new JPasswordField();
-								panel_2.add(passwordField_1);
-		
-				txtBaseDeDato_1 = new JTextField();
-				txtBaseDeDato_1.setText("  BASE DE DATOS:");
-				txtBaseDeDato_1.setEditable(false);
-				txtBaseDeDato_1.setColumns(10);
-				panel_2.add(txtBaseDeDato_1);
-		
-		textField_5 = new JTextField();
-		textField_5.setColumns(10);
-		panel_2.add(textField_5);
-		
-		textField_3 = new JTextField();
-		textField_3.setText("  ESQUEMA:");
-		textField_3.setEditable(false);
-		textField_3.setColumns(10);
-		panel_2.add(textField_3);
-		
-				textField_4 = new JTextField();
-				textField_4.setColumns(10);
-				panel_2.add(textField_4);
-		
-				button = new JButton("CONECTAR");
-				button.addActionListener(new ActionListener() {
-					@SuppressWarnings("deprecation")
-					public void actionPerformed(ActionEvent arg0) {
-						controller.connectBD("postgres", "root", "postgres", "centro_educativo", 2);
-//				controller.connectBD(textField_4.getText(),
-//						passwordField_1.getText(), textField_7.getText(), textField_5.getText(),2);
-					}
-				});
-				
-				label_5 = new JLabel("");
-				panel_2.add(label_5);
-				panel_2.add(button);
-		
-		JPanel panel_3 = new JPanel();
-		panel_3.setLayout(null);
+		panelBaseDeDatos1.add(botonConectar1);
 
-		textArea_1 = new TextArea();
-		textArea_1.setBounds(10, 10, 621, 171);
-		textArea_1.setText("Los resultados se podrán encontrar aqui!!!");
-		textArea_1.setEditable(false);
-		panel_3.add(textArea_1);
-		
-				JButton btnComparar = new JButton("COMPARAR");
-				btnComparar.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						controller.Compare();
-					}
-				});
-		contentPane.setLayout(new MigLayout("", "[653px]", "[211px][191px][25px]"));
-		contentPane.add(panel, "cell 0 0,grow");
-		contentPane.add(panel_3, "cell 0 1,grow");
-		contentPane.add(btnComparar, "cell 0 2,alignx right,aligny top");
+		// FIN PANEL BASE DE DATOS 1........................
+
+		panelBaseDeDatos2 = new JPanel();
+		panelDeEntradas.add(panelBaseDeDatos2);
+		panelBaseDeDatos2.setLayout(new GridLayout(0, 2, 0, 0));
+
+		titleBaseDeDatos2 = new JTextField();
+		titleBaseDeDatos2.setText("Base de datos 2");
+		titleBaseDeDatos2.setEditable(false);
+		titleBaseDeDatos2.setColumns(10);
+		panelBaseDeDatos2.add(titleBaseDeDatos2);
+
+		espacioEnBlanco2 = new JLabel("");
+		panelBaseDeDatos2.add(espacioEnBlanco2);
+
+		labelUsuario2 = new JTextField();
+		labelUsuario2.setText("  USUARIO:");
+		labelUsuario2.setEditable(false);
+		labelUsuario2.setColumns(10);
+		panelBaseDeDatos2.add(labelUsuario2);
+
+		usuarioBaseDeDatos2 = new JTextField();
+		usuarioBaseDeDatos2.setColumns(10);
+		usuarioBaseDeDatos2.setText("postgres");
+		panelBaseDeDatos2.add(usuarioBaseDeDatos2);
+
+		labelContrasenia2 = new JTextField();
+		labelContrasenia2.setText("  CONTRASE\u00D1A:");
+		labelContrasenia2.setEditable(false);
+		labelContrasenia2.setColumns(10);
+		panelBaseDeDatos2.add(labelContrasenia2);
+
+		contraseniaBaseDeDatos2 = new JPasswordField();
+		contraseniaBaseDeDatos2.setText("root");
+		panelBaseDeDatos2.add(contraseniaBaseDeDatos2);
+
+		labelBaseDeDatos2 = new JTextField();
+		labelBaseDeDatos2.setText("  BASE DE DATOS:");
+		labelBaseDeDatos2.setEditable(false);
+		labelBaseDeDatos2.setColumns(10);
+		panelBaseDeDatos2.add(labelBaseDeDatos2);
+
+		baseDeDatos2 = new JTextField();
+		baseDeDatos2.setColumns(10);
+		baseDeDatos2.setText("postgres");
+		panelBaseDeDatos2.add(baseDeDatos2);
+
+		labelEsquema = new JTextField();
+		labelEsquema.setText("  ESQUEMA:");
+		labelEsquema.setEditable(false);
+		labelEsquema.setColumns(10);
+		panelBaseDeDatos2.add(labelEsquema);
+
+		esquema2 = new JTextField();
+		esquema2.setColumns(10);
+		esquema2.setText("educational_center");
+		panelBaseDeDatos2.add(esquema2);
+
+		espacioEnBlanco4 = new JLabel("");
+		panelBaseDeDatos2.add(espacioEnBlanco4);
+
+		botonConectar2 = new JButton("CONECTAR");
+		botonConectar2.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
+			public void actionPerformed(ActionEvent arg0) {
+				controller.connectBD(usuarioBaseDeDatos2.getText(),
+						contraseniaBaseDeDatos2.getText(),
+						baseDeDatos2.getText(), esquema2.getText(), 2);
+			}
+		});
+
+		panelBaseDeDatos2.add(botonConectar2);
+
+		JPanel panelDeSalidas = new JPanel();
+
+		textAreaResultados = new TextArea();
+		textAreaResultados
+				.setText("Los resultados se podran encontrar aqui!!!");
+		textAreaResultados.setEditable(false);
+		panelPrincipal.setLayout(new MigLayout("", "[653px]",
+				"[211px][191px][25px]"));
+		panelPrincipal.add(panelDeEntradas, "cell 0 0,grow");
+		panelPrincipal.add(panelDeSalidas, "cell 0 1,grow");
+		GroupLayout gl_panelDeSalidas = new GroupLayout(panelDeSalidas);
+		gl_panelDeSalidas.setHorizontalGroup(gl_panelDeSalidas
+				.createParallelGroup(Alignment.LEADING).addGroup(
+						gl_panelDeSalidas
+								.createSequentialGroup()
+								.addGap(13)
+								.addComponent(textAreaResultados,
+										GroupLayout.DEFAULT_SIZE, 622,
+										Short.MAX_VALUE).addContainerGap()));
+		gl_panelDeSalidas.setVerticalGroup(gl_panelDeSalidas
+				.createParallelGroup(Alignment.LEADING).addGroup(
+						gl_panelDeSalidas
+								.createSequentialGroup()
+								.addGap(5)
+								.addComponent(textAreaResultados,
+										GroupLayout.DEFAULT_SIZE, 180,
+										Short.MAX_VALUE).addContainerGap()));
+		panelDeSalidas.setLayout(gl_panelDeSalidas);
+
+		JButton botonComparar = new JButton("COMPARAR");
+		panelPrincipal.add(botonComparar,
+				"cell 0 2,alignx center,aligny center");
+		botonComparar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				controller.Compare();
+			}
+		});
 	}
 
+	/**
+	 * Toma un string y lo inserta en el text area de resultados.
+	 * 
+	 * @param string
+	 */
 	public void addText(String string) {
-		textArea_1.setText("\n" + string);
+		textAreaResultados.setText("\n" + string);
 	}
 
+	/**
+	 * Limpia el text area en donde se almacenan los resultados.
+	 */
 	public void clearText() {
-		textArea_1.setText("");
+		textAreaResultados.setText("");
 	}
 }

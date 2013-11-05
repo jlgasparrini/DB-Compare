@@ -55,7 +55,7 @@ public class Controller {
 			view.addText("Base de Datos \"" + DB + "\" conectada al esquema "+c.getSchema()+".");
 		}
 		if (status == 1) {
-			view.addText("ERROR: No se encontró el driver de la DB.");
+			view.addText("ERROR: No se encontro el esquema.");
 			if (c.getDb().compareTo(this.firstInstance.getDb()) == 0) {
 				this.firstInstance = null;
 			}
