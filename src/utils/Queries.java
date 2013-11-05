@@ -166,4 +166,59 @@ public class Queries {
 		}
 		return result;
 	}
+	
+	/**
+	 * Dada una conexion y un esquema devuelve un conjunto con cada uno de los procedimientos de la base de datos.
+	 * (En este caso los procedimientos son funciones ya que estamos trabajando con postgreSQL.)
+	 * @param conn
+	 * @param schema
+	 * @return HashSet<String>
+	 */
+	private static HashSet<String> getNamesOfProcedures(DatabaseMetaData conn, String schema){
+		HashSet<String> result = new HashSet<String>();
+		try {
+			ResultSet res = conn.getProcedures(conn.getConnection().getCatalog(), schema, null);
+			while (res.next()) {
+				result.add(res.getString(3)); //Devuelve el nombre de una funcion encontrada en la db.
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	public static HashSet<String> getProfilesOfStoreProcedures(DatabaseMetaData conn, String schema, String procedureName){
+		HashSet<String> result = new HashSet<String>();
+		try {
+			ResultSet res = conn.getProcedureColumns(conn.getConnection().getCatalog(), "public", procedureName, null);
+			while (res.next()){
+				System.out.println(res.getString(1));
+				System.out.println(res.getString(2));
+				System.out.println(res.getString(3));
+				System.out.println(res.getString(4));
+				System.out.println(res.getString(5));
+				System.out.println(res.getString(6));
+				System.out.println(res.getString(7));
+				System.out.println(res.getString(8));
+				System.out.println(res.getString(9));
+				System.out.println(res.getString(10));
+				System.out.println(res.getString(11));
+				System.out.println(res.getString(12));
+				System.out.println(res.getString(13));
+				System.out.println(res.getString(14));
+				System.out.println(res.getString(15));
+				System.out.println(res.getString(16));
+				System.out.println(res.getString(17));
+				System.out.println(res.getString(18));
+				System.out.println(res.getString(19));
+				System.out.println(res.getString(20));
+				System.out.println("----------------------------");
+			
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 }

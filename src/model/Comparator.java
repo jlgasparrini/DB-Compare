@@ -46,6 +46,7 @@ public class Comparator {
 		String result = null;
 		System.out.println(Queries.getIndexs(this.metaDataSecondDB, "educational_center", "asiste"));
 		result = compareTableNames(schema1, schema2);
+		Queries.getProfilesOfStoreProcedures(this.metaDataFirstDB, this.firstDB.getSchema(), "sp_damepaises");
 		if (!schema1.isEmpty())
 			result += compareTableAttributes(schema1);
 		if (result == null)
