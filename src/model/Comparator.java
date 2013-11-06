@@ -114,9 +114,10 @@ public class Comparator {
 			String tableName = (String) iterator.next();
 			//retorna las diferecias en los atributos de la tabla actual
 			String difAttribute = compareTheAttributesOfTheTable(tableName);
-			String difPrimarykey = comparePrimaryKey(tableName);
+			String difPrimarykey = compareKey(tableName,"primaria");
+			String difUniqueKey = compareKey(tableName,"unica");
 			String difForeignKeys = compareForeignKeys(tableName);
-			if(difAttribute.length() != 0 || difPrimarykey.length() != 0 || difForeignKeys.length() != 0){
+			if(difAttribute.length() + difPrimarykey.length()+ difForeignKeys.length() + difUniqueKey.length() > 0){
 				if (!different){
 					tmp += "La tabla " + tableName + " que se encuentra en ambos esquemas, tiene de diferente: \n";
 					different = true;
@@ -181,29 +182,38 @@ public class Comparator {
 		table2.clear();
 		return tmp;
 	}
-	
-	private String comparePrimaryKey(String tableName){
+	/**
+	 * Compara las claves unicas o primarias de la tabla pasada por parametro
+	 * @param tableName "String"
+	 * @param keyType "primaria" para clave primaria - "unica" para clave unica
+	 * @return String
+	 */
+	private String compareKey(String tableName, String keyType){
 		String tmp = "";
 		HashSet<String> table1 = new HashSet<String>();
 		HashSet<String> table2 = new HashSet<String>();
-		// cargo los conjuntos con la informacion de los 
-		//atributos de la tabla pasada por parametro
-		table1 = Queries.getPrimaryKeys(metaDataFirstDB, firstDB.getSchema(), tableName);
-		table2 = Queries.getPrimaryKeys(metaDataSecondDB, secondDB.getSchema(), tableName);
+		// cargo los conjuntos con la informacion de la clave,dependiendo de cual sea
+		if(keyType.compareTo("primaria") == 0){ // si estoy comparando claves primarias
+			table1 = Queries.getPrimaryKeys(metaDataFirstDB, firstDB.getSchema(), tableName);
+			table2 = Queries.getPrimaryKeys(metaDataSecondDB, secondDB.getSchema(), tableName);
+		}else{ // si estoy comparando claves unicas
+			table1 = Queries.getUniques(metaDataFirstDB, firstDB.getSchema(), tableName);
+			table2 = Queries.getUniques(metaDataSecondDB, secondDB.getSchema(), tableName);
+		}
 		//comparo las claves primarias del primer esquema con las del segundo
 		for (Iterator<String> iterator = table1.iterator(); iterator.hasNext();) {
-			String primaryKey1 = (String) iterator.next();
+			String key1 = (String) iterator.next();
 			//si se encuentra en ambos esquemas la elimino del segundo
-			if(table2.contains(primaryKey1)){
-				table2.remove(primaryKey1);
+			if(table2.contains(key1)){
+				table2.remove(key1);
 			}else //si se encuetra solo en el primer esquema, lo informo
-				tmp += "\t- La clave primaria " + primaryKey1 + " de la tabla " + tableName 
+				tmp += "\t- La clave "+ keyType +" "+ key1 + " de la tabla " + tableName 
 					+ " solo se encuentra en el esquema " + firstDB.getSchema() + "\n";
 		}
 		//informo las claves primarias que se encuentran unicamente en el segundo esquema
 		for (Iterator<String> iterator = table2.iterator(); iterator.hasNext();) {
-			String primaryKey2 = (String) iterator.next();
-			tmp += "\t- La clave primaria " + primaryKey2 + " de la tabla " + tableName 
+			String key2 = (String) iterator.next();
+			tmp += "\t- La clave "+ keyType +" "+ key2 + " de la tabla " + tableName 
 					+ " solo se encuentra en el esquema " + secondDB.getSchema() + "\n";
 		}
 		return tmp;
