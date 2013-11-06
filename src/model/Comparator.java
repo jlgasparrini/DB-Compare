@@ -47,6 +47,7 @@ public class Comparator {
 		result = compareTableNames(schema1, schema2);
 		if (!schema1.isEmpty())
 			result += compareTablesEqualsName(schema1);
+		result += compareStoredProcedures();
 		if (result.length() == 0)
 			result = "Las bases de datos de los esquemas son iguales";
 		return result;
@@ -301,5 +302,41 @@ public class Comparator {
 		table1.clear();
 		table2.clear();
 		return tmp;
+	}
+	
+	private String compareStoredProcedures(){
+		String result = "";
+		HashSet<String> proceduresNameFirstDB = Queries.getNamesOfStoredProcedures(this.metaDataFirstDB, this.firstDB.getSchema());
+		HashSet<String> proceduresNameSecondDB = Queries.getNamesOfStoredProcedures(this.metaDataSecondDB, this.secondDB.getSchema());
+		for (String string : proceduresNameFirstDB) {
+			boolean flagDiff = false;
+			String aux = "";
+			if (proceduresNameSecondDB.contains(string)){
+				//Entro solamente si se encuentra el mismo nombre de procedimiento en el otro esquema.
+				HashSet<String> profile1 = Queries.getProfilesOfStoreProcedures(this.metaDataFirstDB,this.firstDB.getSchema(), string);
+				HashSet<String> profile2 = Queries.getProfilesOfStoreProcedures(this.metaDataSecondDB,this.secondDB.getSchema(), string);
+				//Verifico si hay diferencias en el perfil de la funcion.
+				if (profile1.size() > profile2.size()){
+					result+= "\t- En el esquema "+this.firstDB.getSchema()+" el procedimiento tiene mayor cantidad de parametros.\n";
+					flagDiff = true;
+				}
+				if (profile1.size() < profile2.size()){
+					result+= "\t- En el esquema "+this.secondDB.getSchema()+" el procedimiento tiene mayor cantidad de parametros.\n";
+					flagDiff = true;
+				}
+				if (profile1.size() == profile2.size())
+					if (!profile1.equals(profile2)){
+						flagDiff = true;
+						result+= "\t- El perfil del procedimiento almacenado tiene parametros distintos.\n";
+					}
+				if (!flagDiff)
+					result+= "- El procedimiento almacenado "+string+" es igual en los dos esquemas.";
+				else{
+					aux+= "- El procedimiento almacenado "+string+" tiene las siguientes diferencias.";
+					result = aux + result;
+				}
+			}
+		}
+		return result;
 	}
 }

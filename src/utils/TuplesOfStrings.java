@@ -1,13 +1,12 @@
 package utils;
 
 /**
- * Objeto: tuplas de tamaño N de tipo String
+ * Objeto: tuplas de tamaï¿½o N de tipo String
  * El rango de las tuplas va de 0 ... N-1
  */
 public class TuplesOfStrings {
 	
 	private String[] tuple;
-	
 	/**
 	 * Constructor de la clase
 	 * @param size "determina la cantidad de elementos 
@@ -66,5 +65,14 @@ public class TuplesOfStrings {
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		String aux= "(";
+		for (int i = 0; i < this.tuple.length; i++)
+			aux+= this.getIndex(i)+", ";
+		aux += ")";
+		return aux;
 	}
 }

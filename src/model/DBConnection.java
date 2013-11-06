@@ -15,7 +15,7 @@ import utils.Queries;
 public class DBConnection {
 
 	private String driver = "org.postgresql.Driver";
-	private String url = "jdbc:postgresql://localhost:5432/";
+	private String url = "jdbc:postgresql://";
 	private java.sql.Connection conn;
 	private String schema;
 	private String dataBase;
@@ -33,21 +33,24 @@ public class DBConnection {
 	 * @param password
 	 *            "password of the database to connect"
 	 */
-	public DBConnection(String user, String password, String dataBase, String schema) {
+	public DBConnection(String host, String user, String password, String dataBase, String schema) {
 		this.dataBase = dataBase;
 		this.user = user;
 		this.schema = schema;
+		this.url+= host+"/";
+		this.url+=this.dataBase;
 		try {
-			// Load the driver.
+			// Cargo el driver
 			Class.forName(driver);
-			// Getting a connection.
-			conn = DriverManager.getConnection(url+this.dataBase, user, password);
+			// Obtengo una conexion.
+			conn = DriverManager.getConnection(url, user, password);
+			//Verifico que el esquema existe en mi base de datos.
 			ResultSet r = preparateConsult(this, Queries.existsSchema(schema));
-			statusConnection = (r.next())?0:1; // Rigth connection.
+			statusConnection = (r.next())?0:2; // Devuelvo 0 si la conexion fue correcta.
 		} catch (ClassNotFoundException e) {
-			statusConnection = 1; // Fail to load the driver.
+			statusConnection = 1; // Fallo al cargar el driver.
 		} catch (SQLException e) {
-			statusConnection = 2; // Fail to getting the database.
+			statusConnection = 2; // Fallo al conectar a la base de datos o el esquema no se ha encontrado.
 		}
 	}
 

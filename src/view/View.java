@@ -6,8 +6,7 @@ import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,7 +15,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import net.miginfocom.swing.MigLayout;
 import controller.Controller;
 
 /**
@@ -55,6 +53,10 @@ public class View extends JFrame {
 	private JLabel espacioEnBlanco1;
 	private JLabel espacioEnBlanco2;
 	private JLabel espacioEnBlanco4;
+	private JTextField labelHostDB1;
+	private JTextField hostDB1;
+	private JTextField labelHostDB2;
+	private JTextField hostDB2;
 
 	/**
 	 * Constructor de la clase.
@@ -88,6 +90,17 @@ public class View extends JFrame {
 
 		espacioEnBlanco1 = new JLabel("");
 		panelBaseDeDatos1.add(espacioEnBlanco1);
+		
+		labelHostDB1 = new JTextField();
+		labelHostDB1.setText("  HOST:");
+		labelHostDB1.setEditable(false);
+		labelHostDB1.setColumns(10);
+		panelBaseDeDatos1.add(labelHostDB1);
+		
+		hostDB1 = new JTextField();
+		hostDB1.setText("localhost:5432");
+		hostDB1.setColumns(10);
+		panelBaseDeDatos1.add(hostDB1);
 
 		labelUsuario1 = new JTextField();
 		labelUsuario1.setEditable(false);
@@ -137,7 +150,7 @@ public class View extends JFrame {
 		botonConectar1.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-				controller.connectBD(usuarioBaseDeDatos1.getText(),
+				controller.connectBD(hostDB1.getText(), usuarioBaseDeDatos1.getText(),
 						contraseniaBaseDeDatos1.getText(),
 						baseDeDatos1.getText(), esquema1.getText(), 1);
 			}
@@ -159,6 +172,17 @@ public class View extends JFrame {
 
 		espacioEnBlanco2 = new JLabel("");
 		panelBaseDeDatos2.add(espacioEnBlanco2);
+		
+		labelHostDB2 = new JTextField();
+		labelHostDB2.setText("   HOST:");
+		labelHostDB2.setEditable(false);
+		labelHostDB2.setColumns(10);
+		panelBaseDeDatos2.add(labelHostDB2);
+		
+		hostDB2 = new JTextField();
+		hostDB2.setText("localhost:5432");
+		hostDB2.setColumns(10);
+		panelBaseDeDatos2.add(hostDB2);
 
 		labelUsuario2 = new JTextField();
 		labelUsuario2.setText("  USUARIO:");
@@ -210,7 +234,7 @@ public class View extends JFrame {
 		botonConectar2.addActionListener(new ActionListener() {
 			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent arg0) {
-				controller.connectBD(usuarioBaseDeDatos2.getText(),
+				controller.connectBD(hostDB2.getText(), usuarioBaseDeDatos2.getText(),
 						contraseniaBaseDeDatos2.getText(),
 						baseDeDatos2.getText(), esquema2.getText(), 2);
 			}
@@ -224,32 +248,14 @@ public class View extends JFrame {
 		textAreaResultados
 				.setText("Los resultados se podran encontrar aqui!!!");
 		textAreaResultados.setEditable(false);
-		panelPrincipal.setLayout(new MigLayout("", "[653px]",
-				"[211px][191px][25px]"));
-		panelPrincipal.add(panelDeEntradas, "cell 0 0,grow");
-		panelPrincipal.add(panelDeSalidas, "cell 0 1,grow");
-		GroupLayout gl_panelDeSalidas = new GroupLayout(panelDeSalidas);
-		gl_panelDeSalidas.setHorizontalGroup(gl_panelDeSalidas
-				.createParallelGroup(Alignment.LEADING).addGroup(
-						gl_panelDeSalidas
-								.createSequentialGroup()
-								.addGap(13)
-								.addComponent(textAreaResultados,
-										GroupLayout.DEFAULT_SIZE, 622,
-										Short.MAX_VALUE).addContainerGap()));
-		gl_panelDeSalidas.setVerticalGroup(gl_panelDeSalidas
-				.createParallelGroup(Alignment.LEADING).addGroup(
-						gl_panelDeSalidas
-								.createSequentialGroup()
-								.addGap(5)
-								.addComponent(textAreaResultados,
-										GroupLayout.DEFAULT_SIZE, 180,
-										Short.MAX_VALUE).addContainerGap()));
-		panelDeSalidas.setLayout(gl_panelDeSalidas);
+		panelPrincipal.setLayout(new GridLayout(0, 1, 0, 0));
+		panelPrincipal.add(panelDeEntradas);
+		panelPrincipal.add(panelDeSalidas);
+		panelDeSalidas.setLayout(new BoxLayout(panelDeSalidas, BoxLayout.X_AXIS));
+		panelDeSalidas.add(textAreaResultados);
 
 		JButton botonComparar = new JButton("COMPARAR");
-		panelPrincipal.add(botonComparar,
-				"cell 0 2,alignx center,aligny center");
+		panelDeSalidas.add(botonComparar);
 		botonComparar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				controller.Compare();
@@ -264,6 +270,7 @@ public class View extends JFrame {
 	 */
 	public void addText(String string) {
 		textAreaResultados.setText("\n" + string);
+		textAreaResultados.setCaretPosition(0);
 	}
 
 	/**
