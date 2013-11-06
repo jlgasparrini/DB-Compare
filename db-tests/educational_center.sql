@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS educational_center.company (
   name VARCHAR(45) NULL,
   address VARCHAR(45) NULL,
   CONSTRAINT CUIT_pos CHECK (CUIT>0),
-  PRIMARY KEY (CUIT));
+  PRIMARY KEY (CUIT), 
+  UNIQUE (name));
 
 -- -----------------------------------------------------
 -- Table company_phone
@@ -92,17 +93,17 @@ CREATE TABLE IF NOT EXISTS educational_center.course (
   CONSTRAINT DNI_CF_professor
     FOREIGN KEY (DNI) REFERENCES educational_center.professor (DNI));
 
+CREATE INDEX i_course ON educational_center.course(course_code);
+
 -- -----------------------------------------------------
 -- Table Asiste
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS educational_center.Asiste (
   DNI INT NOT NULL,
-  course_code INT NOT NULL,
-  PRIMARY KEY (DNI, course_code),
+  course_code INT UNIQUE NOT NULL,
+  PRIMARY KEY (DNI),
   CONSTRAINT DNI_CF_student
-    FOREIGN KEY (DNI) REFERENCES educational_center.student (DNI),
-  CONSTRAINT codigocourse_CF_course
-    FOREIGN KEY (course_code) REFERENCES educational_center.course (course_code));
+    FOREIGN KEY (DNI) REFERENCES educational_center.student (DNI));
 
 -- -----------------------------------------------------
 -- Table Auditoria_course
@@ -132,3 +133,12 @@ $trigger_audit_course$ LANGUAGE plpgsql;
 CREATE TRIGGER trigger_audit_course
   AFTER UPDATE ON educational_center.course
   FOR EACH ROW EXECUTE PROCEDURE update_date_course();
+
+CREATE OR REPLACE FUNCTION sp_get_by_orientacion(Torientation) RETURNS text AS $$
+DECLARE
+   result TEXT;
+BEGIN
+   SELECT name INTO result FROM educational_center.course WHERE orientation=$1;
+   return result;
+END
+$$ LANGUAGE plpgsql STABLE;
