@@ -73,8 +73,7 @@ public class Comparator {
 			if (!schema2.contains(tableName)) {
 				schema1.remove(tableName);
 				if (!different) {
-					tmp += "El esquema " + this.firstDB.getSchema()
-							+ " contiene las tablas adicionales: \n";
+					tmp += "El esquema " + this.firstDB.getSchema()	+ " contiene las tablas adicionales: \n";
 					different = true;
 				}
 				tmp += "- " + tableName + "\n";
@@ -90,8 +89,7 @@ public class Comparator {
 			if (!schema1.contains(tableName2)) {
 				schema2.remove(tableName2);
 				if (!different) {
-					tmp += "El esquema " + this.secondDB.getSchema()
-							+ " contiene las tablas adicionales: \n";
+					tmp += "El esquema " + this.secondDB.getSchema() + " contiene las tablas adicionales: \n";
 					different = true;
 				}
 				tmp += "- " + tableName2 + "\n";
@@ -105,9 +103,7 @@ public class Comparator {
 
 	/**
 	 * compare the two schemas columns where the name of the tables are the same
-	 * 
-	 * @param schema
-	 *            "set containing the names of the tables with the same name in both schemes"
+	 * @param schema"set containing the names of the tables with the same name in both schemes"
 	 * @return String "containing the differences"
 	 */
 	private String compareTablesEqualsName(HashSet<String> schema) {
@@ -117,14 +113,14 @@ public class Comparator {
 		for (Iterator<String> iterator = schema.iterator(); iterator.hasNext();) {
 			String tableName = (String) iterator.next();
 			//retorna las diferecias en los atributos de la tabla actual
-			String differencesInTheAttribute = compareTheAttributesOfTheTable(tableName);
-			String differencesInThePrimarykey = comparePrimaryKey(tableName);
-			if (!different && (differencesInTheAttribute != "" || differencesInThePrimarykey != "")){
-				tmp += "La tabla " + tableName
-						+ " que se encuentra en ambos esquemas, tiene de diferente: \n";
+			String difAttribute = compareTheAttributesOfTheTable(tableName);
+			String difPrimarykey = comparePrimaryKey(tableName);
+			String difForeignKeys = compareForeignKeys(tableName);
+			if (!different && (difAttribute != "" || difPrimarykey != "" || difForeignKeys == "")){
+				tmp += "La tabla " + tableName + " que se encuentra en ambos esquemas, tiene de diferente: \n";
 				different = true;
 			}
-			tmp+= differencesInTheAttribute + differencesInThePrimarykey;
+			tmp+= difAttribute + difPrimarykey + difForeignKeys;
 		}
 		return tmp;
 	}
@@ -152,13 +148,9 @@ public class Comparator {
 				if (tupleOfAttribute1.getIndex(0) == tupleOfAttribute2.getIndex(0)) {
 					//comparo si los atributos con mismo nombre, tienen distinto tipo
 					if (tupleOfAttribute1.getIndex(1) != tupleOfAttribute2.getIndex(1)) {
-						tmp += "- La columna " + tupleOfAttribute1.getIndex(0)
-								+ " en el esquema " + firstDB.getSchema()
-								+ " el tipo es "
-								+ tupleOfAttribute1.getIndex(1)
-								+ " y en el esquema "
-								+ secondDB.getSchema() + " es de tipo "
-								+ tupleOfAttribute2.getIndex(1) + "\n";
+						tmp += "- La columna " + tupleOfAttribute1.getIndex(0) + " en el esquema " + firstDB.getSchema()
+								+ " el tipo es " + tupleOfAttribute1.getIndex(1) + " y en el esquema "
+								+ secondDB.getSchema() + " es de tipo " + tupleOfAttribute2.getIndex(1) + "\n";
 					}
 					//elimino los atributos de ambos conjuntos, porque ya estan comparados
 					table1.remove(tupleOfAttribute1);
@@ -170,15 +162,13 @@ public class Comparator {
 		for (Iterator<TuplesOfStrings> iterator3 = table1.iterator(); iterator3.hasNext();) {
 			TuplesOfStrings tuple1 = (TuplesOfStrings) iterator3.next();
 			tmp += "\t- La columna " + tuple1.getIndex(0)
-					+ " de tipo: " + tuple1.getIndex(1)
-					+ " solo se encuentra en la tabla " + tableName
+					+ " de tipo: " + tuple1.getIndex(1)	+ " solo se encuentra en la tabla " + tableName
 					+ " del esquema " + firstDB.getSchema() + "\n";
 		}
 		// save the columns with distinct name in the second schema
 		for (Iterator<TuplesOfStrings> iterator4 = table2.iterator(); iterator4.hasNext();) {
 			TuplesOfStrings tuple2 = (TuplesOfStrings) iterator4.next();
-			tmp += "\t- La columna " + tuple2.getIndex(0)
-					+ " de tipo: " + tuple2.getIndex(1)
+			tmp += "\t- La columna " + tuple2.getIndex(0) + " de tipo: " + tuple2.getIndex(1)
 					+ " solo se encuentra en la tabla " + tableName
 					+ " del esquema " + secondDB.getSchema() + "\n";
 		}
@@ -202,18 +192,110 @@ public class Comparator {
 			if(table2.contains(primaryKey1)){
 				table2.remove(primaryKey1);
 			}else //si se encuetra solo en el primer esquema, lo informo
-				tmp += "\t- La clave primaria " + primaryKey1 
-					+ " de la tabla " + tableName 
-					+ " solo se encuentra en el esquema " + firstDB.getSchema();
+				tmp += "\t- La clave primaria " + primaryKey1 + " de la tabla " + tableName 
+					+ " solo se encuentra en el esquema " + firstDB.getSchema() + "\n";
 		}
 		//informo las claves primarias que se encuentran unicamente en el segundo esquema
 		for (Iterator<String> iterator = table2.iterator(); iterator.hasNext();) {
 			String primaryKey2 = (String) iterator.next();
-			tmp += "\t- La clave primaria " + primaryKey2 
-					+ " de la tabla " + tableName 
-					+ " solo se encuentra en el esquema " + secondDB.getSchema();
+			tmp += "\t- La clave primaria " + primaryKey2 + " de la tabla " + tableName 
+					+ " solo se encuentra en el esquema " + secondDB.getSchema() + "\n";
 		}
-		
+		return tmp;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String compareForeignKeys(String tableName){
+		String tmp = ""; //variable donde se setean los resultados
+		// set that stored the information in the columns of the current table
+		HashSet<TuplesOfStrings> table1 = new HashSet<TuplesOfStrings>();
+		HashSet<TuplesOfStrings> table2 = new HashSet<TuplesOfStrings>();
+		// cargo los conjuntos con la informacion de los 
+		//atributos de la tabla pasada por parametro
+		table1 = Queries.getForeignKeys(metaDataFirstDB, firstDB.getSchema(), tableName);
+		table2 = Queries.getForeignKeys(metaDataSecondDB, secondDB.getSchema(), tableName);
+		// auxiliary sets used for the iteration
+		HashSet<TuplesOfStrings> aux = (HashSet<TuplesOfStrings>) table1.clone();
+		HashSet<TuplesOfStrings> aux2 = (HashSet<TuplesOfStrings>) table2.clone();
+		//banderas utilizadas para saber cuales son las diferencias con claves del mismo nombre
+		boolean different = false;
+		//variables para notificar diferencias
+		String differencesSchemaFirst = "";
+		String differencesSchemaSecond = "";
+		//comparo los elementos de los conjuntos, buscando claves con mismo nombre
+		for (Iterator<TuplesOfStrings> iterator = aux.iterator(); iterator.hasNext();) {
+			TuplesOfStrings tupleOfAttribute1 = (TuplesOfStrings) iterator.next();
+			for (Iterator<TuplesOfStrings> iterator2 = aux2.iterator(); iterator2.hasNext();) {
+				TuplesOfStrings tupleOfAttribute2 = (TuplesOfStrings)  iterator2.next();
+				//comparo si los nombres de las claves foraneas son iguales
+				if (tupleOfAttribute1.getIndex(0) == tupleOfAttribute2.getIndex(0)) {
+					//comparo si las claves son de distintos atributo 
+					if (tupleOfAttribute1.getIndex(1) != tupleOfAttribute2.getIndex(1)){
+						differencesSchemaFirst += " el atributo es " + tupleOfAttribute1.getIndex(1);
+						differencesSchemaSecond += " el atributo es " + tupleOfAttribute2.getIndex(1);
+						different = true;
+					}
+					//comparo si las claves hacen referecia a distintas tablas
+					if (tupleOfAttribute1.getIndex(2) != tupleOfAttribute2.getIndex(2)){
+						if(different){
+							differencesSchemaFirst += ",";
+							differencesSchemaSecond += ",";
+						}
+						differencesSchemaFirst += " la tabla referenciada es " + tupleOfAttribute1.getIndex(2);
+						differencesSchemaSecond += " la tabla referenciada es " + tupleOfAttribute2.getIndex(2);
+						different = true;
+					}
+					//comparo si las claves hacen referecia a distintos atributos de las tablas refer
+					if (tupleOfAttribute1.getIndex(3) != tupleOfAttribute2.getIndex(3)){
+						if(different){
+							differencesSchemaFirst += " y";
+							differencesSchemaSecond += " y";
+						}
+						differencesSchemaFirst += " el atributo referenciado es " + tupleOfAttribute1.getIndex(3);
+						differencesSchemaSecond += " el atributo referenciado es " + tupleOfAttribute2.getIndex(3);
+						different = true;
+					}
+					//notifico las diferencias
+					if(different){
+						tmp += "- La clave foranea " + tupleOfAttribute1.getIndex(0)
+								+ " de la tabla " + tableName
+								+ " en el esquema " + firstDB.getSchema()
+								+ differencesSchemaFirst
+								+ " y en el esquema " + secondDB.getSchema()
+								+ differencesSchemaSecond + "\n";
+					}
+					//elimino las claves foraneas de ambos conjuntos, porque ya estan comparados
+					table1.remove(tupleOfAttribute1);
+					table2.remove(tupleOfAttribute2);
+					//limpio las variables utilizadas para notificar cambios
+					different = false;
+					differencesSchemaFirst = "";
+					differencesSchemaSecond = "";
+				}
+			}
+		}
+		// save the columns with distinct name in the first schema
+		for (Iterator<TuplesOfStrings> iterator3 = table1.iterator(); iterator3.hasNext();) {
+			TuplesOfStrings tuple1 = (TuplesOfStrings) iterator3.next();
+			tmp += "\t- La clave foranea " + tuple1.getIndex(0)
+					+ " del atributo: " + tuple1.getIndex(1)
+					+ " que hace referencia a la tabla " + tuple1.getIndex(2)
+					+ " del campo " + tuple1.getIndex(3) 
+					+ " solo se encuentra en la tabla " + tableName
+					+ " del esquema " + firstDB.getSchema() + "\n";
+		}
+		// save the columns with distinct name in the second schema
+		for (Iterator<TuplesOfStrings> iterator4 = table2.iterator(); iterator4.hasNext();) {
+			TuplesOfStrings tuple2 = (TuplesOfStrings) iterator4.next();
+			tmp += "\t- La clave foranea " + tuple2.getIndex(0)
+					+ " del atributo: " + tuple2.getIndex(1)
+					+ " que hace referencia a la tabla " + tuple2.getIndex(2)
+					+ " del campo " + tuple2.getIndex(3) 
+					+ " solo se encuentra en la tabla " + tableName
+					+ " del esquema " + firstDB.getSchema() + "\n";
+		}
+		table1.clear();
+		table2.clear();
 		return tmp;
 	}
 }
