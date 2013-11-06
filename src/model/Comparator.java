@@ -45,11 +45,10 @@ public class Comparator {
 		HashSet<String> schema2 = Queries.getTables(this.metaDataSecondDB, this.secondDB.getSchema());
 		String result = "";
 		result = compareTableNames(schema1, schema2);
-		if (!schema1.isEmpty()){
+		if (!schema1.isEmpty())
 			result += compareTablesEqualsName(schema1);
-			result += compareStoredProcedures();
-		}
-		if (result == "")
+		result += compareStoredProcedures();
+		if (result.length() == 0)
 			result = "Las bases de datos de los esquemas son iguales";
 		return result;
 	}
@@ -108,19 +107,25 @@ public class Comparator {
 	 */
 	private String compareTablesEqualsName(HashSet<String> schema) {
 		String tmp = "";
-		boolean different = false; // determines whether early printed legend
+		boolean different = false;
 		// compares the columns of the tables with the same name
 		for (Iterator<String> iterator = schema.iterator(); iterator.hasNext();) {
 			String tableName = (String) iterator.next();
 			//retorna las diferecias en los atributos de la tabla actual
 			String difAttribute = compareTheAttributesOfTheTable(tableName);
-			String difPrimarykey = comparePrimaryKey(tableName);
+			String difPrimarykey = compareKey(tableName,"primaria");
+			String difUniqueKey = compareKey(tableName,"unica");
 			String difForeignKeys = compareForeignKeys(tableName);
-			if (!different && (difAttribute != "" || difPrimarykey != "" || difForeignKeys == "")){
-				tmp += "La tabla " + tableName + " que se encuentra en ambos esquemas, tiene de diferente: \n";
-				different = true;
+			if(difAttribute.length() + difPrimarykey.length()+ difForeignKeys.length() + difUniqueKey.length() > 0){
+				if (!different){
+					tmp += "La tabla " + tableName + " que se encuentra en ambos esquemas, tiene de diferente: \n";
+					different = true;
+				}
+				tmp+= difAttribute + difPrimarykey + difForeignKeys + "\n";
+				difAttribute = "";
+				difForeignKeys = "";
+				difPrimarykey = "";
 			}
-			tmp+= difAttribute + difPrimarykey + difForeignKeys;
 		}
 		return tmp;
 	}
@@ -145,9 +150,9 @@ public class Comparator {
 			for (Iterator<TuplesOfStrings> iterator2 = aux2.iterator(); iterator2.hasNext();) {
 				TuplesOfStrings tupleOfAttribute2 = (TuplesOfStrings)  iterator2.next();
 				//comparo si los nombres de los atributos son iguales
-				if (tupleOfAttribute1.getIndex(0) == tupleOfAttribute2.getIndex(0)) {
+				if (tupleOfAttribute1.getIndex(0).compareTo(tupleOfAttribute2.getIndex(0)) == 0) {
 					//comparo si los atributos con mismo nombre, tienen distinto tipo
-					if (tupleOfAttribute1.getIndex(1) != tupleOfAttribute2.getIndex(1)) {
+					if (tupleOfAttribute1.getIndex(1).compareTo(tupleOfAttribute2.getIndex(1)) != 0) {
 						tmp += "- La columna " + tupleOfAttribute1.getIndex(0) + " en el esquema " + firstDB.getSchema()
 								+ " el tipo es " + tupleOfAttribute1.getIndex(1) + " y en el esquema "
 								+ secondDB.getSchema() + " es de tipo " + tupleOfAttribute2.getIndex(1) + "\n";
@@ -176,29 +181,38 @@ public class Comparator {
 		table2.clear();
 		return tmp;
 	}
-	
-	private String comparePrimaryKey(String tableName){
+	/**
+	 * Compara las claves unicas o primarias de la tabla pasada por parametro
+	 * @param tableName "String"
+	 * @param keyType "primaria" para clave primaria - "unica" para clave unica
+	 * @return String
+	 */
+	private String compareKey(String tableName, String keyType){
 		String tmp = "";
 		HashSet<String> table1 = new HashSet<String>();
 		HashSet<String> table2 = new HashSet<String>();
-		// cargo los conjuntos con la informacion de los 
-		//atributos de la tabla pasada por parametro
-		table1 = Queries.getPrimaryKeys(metaDataFirstDB, firstDB.getSchema(), tableName);
-		table2 = Queries.getPrimaryKeys(metaDataSecondDB, secondDB.getSchema(), tableName);
+		// cargo los conjuntos con la informacion de la clave,dependiendo de cual sea
+		if(keyType.compareTo("primaria") == 0){ // si estoy comparando claves primarias
+			table1 = Queries.getPrimaryKeys(metaDataFirstDB, firstDB.getSchema(), tableName);
+			table2 = Queries.getPrimaryKeys(metaDataSecondDB, secondDB.getSchema(), tableName);
+		}else{ // si estoy comparando claves unicas
+			table1 = Queries.getUniques(metaDataFirstDB, firstDB.getSchema(), tableName);
+			table2 = Queries.getUniques(metaDataSecondDB, secondDB.getSchema(), tableName);
+		}
 		//comparo las claves primarias del primer esquema con las del segundo
 		for (Iterator<String> iterator = table1.iterator(); iterator.hasNext();) {
-			String primaryKey1 = (String) iterator.next();
+			String key1 = (String) iterator.next();
 			//si se encuentra en ambos esquemas la elimino del segundo
-			if(table2.contains(primaryKey1)){
-				table2.remove(primaryKey1);
+			if(table2.contains(key1)){
+				table2.remove(key1);
 			}else //si se encuetra solo en el primer esquema, lo informo
-				tmp += "\t- La clave primaria " + primaryKey1 + " de la tabla " + tableName 
+				tmp += "\t- La clave "+ keyType +" "+ key1 + " de la tabla " + tableName 
 					+ " solo se encuentra en el esquema " + firstDB.getSchema() + "\n";
 		}
 		//informo las claves primarias que se encuentran unicamente en el segundo esquema
 		for (Iterator<String> iterator = table2.iterator(); iterator.hasNext();) {
-			String primaryKey2 = (String) iterator.next();
-			tmp += "\t- La clave primaria " + primaryKey2 + " de la tabla " + tableName 
+			String key2 = (String) iterator.next();
+			tmp += "\t- La clave "+ keyType +" "+ key2 + " de la tabla " + tableName 
 					+ " solo se encuentra en el esquema " + secondDB.getSchema() + "\n";
 		}
 		return tmp;
@@ -228,15 +242,15 @@ public class Comparator {
 			for (Iterator<TuplesOfStrings> iterator2 = aux2.iterator(); iterator2.hasNext();) {
 				TuplesOfStrings tupleOfAttribute2 = (TuplesOfStrings)  iterator2.next();
 				//comparo si los nombres de las claves foraneas son iguales
-				if (tupleOfAttribute1.getIndex(0) == tupleOfAttribute2.getIndex(0)) {
+				if (tupleOfAttribute1.getIndex(0).compareTo(tupleOfAttribute2.getIndex(0)) == 0) {
 					//comparo si las claves son de distintos atributo 
-					if (tupleOfAttribute1.getIndex(1) != tupleOfAttribute2.getIndex(1)){
+					if (tupleOfAttribute1.getIndex(1).compareTo(tupleOfAttribute2.getIndex(1)) != 0){
 						differencesSchemaFirst += " el atributo es " + tupleOfAttribute1.getIndex(1);
 						differencesSchemaSecond += " el atributo es " + tupleOfAttribute2.getIndex(1);
 						different = true;
 					}
 					//comparo si las claves hacen referecia a distintas tablas
-					if (tupleOfAttribute1.getIndex(2) != tupleOfAttribute2.getIndex(2)){
+					if (tupleOfAttribute1.getIndex(2).compareTo(tupleOfAttribute2.getIndex(2)) != 0){
 						if(different){
 							differencesSchemaFirst += ",";
 							differencesSchemaSecond += ",";
@@ -246,7 +260,7 @@ public class Comparator {
 						different = true;
 					}
 					//comparo si las claves hacen referecia a distintos atributos de las tablas refer
-					if (tupleOfAttribute1.getIndex(3) != tupleOfAttribute2.getIndex(3)){
+					if (tupleOfAttribute1.getIndex(3).compareTo(tupleOfAttribute2.getIndex(3)) != 0){
 						if(different){
 							differencesSchemaFirst += " y";
 							differencesSchemaSecond += " y";
