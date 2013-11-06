@@ -57,6 +57,7 @@ public class View extends JFrame {
 	private JTextField hostDB1;
 	private JTextField labelHostDB2;
 	private JTextField hostDB2;
+	private JLabel espacioEnBlanco3;
 
 	/**
 	 * Constructor de la clase.
@@ -155,6 +156,9 @@ public class View extends JFrame {
 						baseDeDatos1.getText(), esquema1.getText(), 1);
 			}
 		});
+		
+		espacioEnBlanco3 = new JLabel("");
+		panelBaseDeDatos1.add(espacioEnBlanco3);
 
 		panelBaseDeDatos1.add(botonConectar1);
 

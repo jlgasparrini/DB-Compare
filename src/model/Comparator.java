@@ -42,9 +42,7 @@ public class Comparator {
 	 */
 	public String runComparison() {
 		HashSet<String> schema1 = Queries.getTables(this.metaDataFirstDB, this.firstDB.getSchema());
-		System.out.println("  schema1   "+schema1);
 		HashSet<String> schema2 = Queries.getTables(this.metaDataSecondDB, this.secondDB.getSchema());
-		System.out.println("  schema2   "+schema2);
 		String result = "";
 		result = compareTableNames(schema1, schema2);
 		if (!schema1.isEmpty()){
@@ -63,8 +61,7 @@ public class Comparator {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private String compareTableNames(HashSet<String> schema1,
-			HashSet<String> schema2) {
+	private String compareTableNames(HashSet<String> schema1, HashSet<String> schema2) {
 		String tmp = "";
 		boolean different = false; // determines whether early printed legend
 		// auxiliary sets used for the iteration
@@ -308,29 +305,25 @@ public class Comparator {
 		HashSet<String> proceduresNameSecondDB = Queries.getNamesOfStoredProcedures(this.metaDataSecondDB, this.secondDB.getSchema());
 		for (String string : proceduresNameFirstDB) {
 			boolean flagDiff = false;
-			String aux = "";
-			if (proceduresNameSecondDB.contains(string)){
+			if (proceduresNameSecondDB.contains(string)) {
 				//Entro solamente si se encuentra el mismo nombre de procedimiento en el otro esquema.
 				HashSet<String> profile1 = Queries.getProfilesOfStoreProcedures(this.metaDataFirstDB,this.firstDB.getSchema(), string);
 				HashSet<String> profile2 = Queries.getProfilesOfStoreProcedures(this.metaDataSecondDB,this.secondDB.getSchema(), string);
 				//Verifico si hay diferencias en el perfil de la funcion.
-				if (profile1.size() > profile2.size()){
+				if (profile1.size() > profile2.size()) {
 					result+= "\t- En el esquema "+this.firstDB.getSchema()+" el procedimiento tiene mayor cantidad de parametros.\n";
 					flagDiff = true;
 				}
-				if (profile1.size() < profile2.size()){
+				if (profile1.size() < profile2.size()) {
 					result+= "\t- En el esquema "+this.secondDB.getSchema()+" el procedimiento tiene mayor cantidad de parametros.\n";
 					flagDiff = true;
 				}
-				if (profile1.size() == profile2.size())
-					if (!profile1.equals(profile2)){
+				if (profile1.size() == profile2.size() && !profile1.equals(profile2)) {
 						flagDiff = true;
 						result+= "\t- El perfil del procedimiento almacenado tiene parametros distintos.\n";
 					}
-				if (!flagDiff)
-					result+= "- El procedimiento almacenado "+string+" es igual en los dos esquemas.";
-				else{
-					aux+= "- El procedimiento almacenado "+string+" tiene las siguientes diferencias.";
+				if (flagDiff){
+					String aux = "\n- El procedimiento almacenado "+string+" tiene las siguientes diferencias:\n";
 					result = aux + result;
 				}
 			}
