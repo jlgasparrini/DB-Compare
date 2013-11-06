@@ -6,8 +6,7 @@ import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,7 +15,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import net.miginfocom.swing.MigLayout;
 import controller.Controller;
 
 /**
@@ -250,32 +248,14 @@ public class View extends JFrame {
 		textAreaResultados
 				.setText("Los resultados se podran encontrar aqui!!!");
 		textAreaResultados.setEditable(false);
-		panelPrincipal.setLayout(new MigLayout("", "[653px]",
-				"[211px][191px][25px]"));
-		panelPrincipal.add(panelDeEntradas, "cell 0 0,grow");
-		panelPrincipal.add(panelDeSalidas, "cell 0 1,grow");
-		GroupLayout gl_panelDeSalidas = new GroupLayout(panelDeSalidas);
-		gl_panelDeSalidas.setHorizontalGroup(gl_panelDeSalidas
-				.createParallelGroup(Alignment.LEADING).addGroup(
-						gl_panelDeSalidas
-								.createSequentialGroup()
-								.addGap(13)
-								.addComponent(textAreaResultados,
-										GroupLayout.DEFAULT_SIZE, 622,
-										Short.MAX_VALUE).addContainerGap()));
-		gl_panelDeSalidas.setVerticalGroup(gl_panelDeSalidas
-				.createParallelGroup(Alignment.LEADING).addGroup(
-						gl_panelDeSalidas
-								.createSequentialGroup()
-								.addGap(5)
-								.addComponent(textAreaResultados,
-										GroupLayout.DEFAULT_SIZE, 180,
-										Short.MAX_VALUE).addContainerGap()));
-		panelDeSalidas.setLayout(gl_panelDeSalidas);
+		panelPrincipal.setLayout(new GridLayout(0, 1, 0, 0));
+		panelPrincipal.add(panelDeEntradas);
+		panelPrincipal.add(panelDeSalidas);
+		panelDeSalidas.setLayout(new BoxLayout(panelDeSalidas, BoxLayout.X_AXIS));
+		panelDeSalidas.add(textAreaResultados);
 
 		JButton botonComparar = new JButton("COMPARAR");
-		panelPrincipal.add(botonComparar,
-				"cell 0 2,alignx center,aligny center");
+		panelDeSalidas.add(botonComparar);
 		botonComparar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				controller.Compare();
@@ -290,6 +270,7 @@ public class View extends JFrame {
 	 */
 	public void addText(String string) {
 		textAreaResultados.setText("\n" + string);
+		textAreaResultados.setCaretPosition(0);
 	}
 
 	/**

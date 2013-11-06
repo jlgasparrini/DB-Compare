@@ -221,14 +221,14 @@ public class Queries {
 	 * @param procedureName
 	 * @return
 	 */
-	public static HashSet<TuplesOfStrings> getProfilesOfStoreProcedures(DatabaseMetaData conn, String schema, String procedureName){
-		HashSet<TuplesOfStrings> result = new HashSet<TuplesOfStrings>();
+	public static HashSet<String> getProfilesOfStoreProcedures(DatabaseMetaData conn, String schema, String procedureName){
+		HashSet<String> result = new HashSet<String>();
 		try {
 			ResultSet res = conn.getProcedureColumns(conn.getConnection().getCatalog(), schema, procedureName, null);
 			while (res.next()){
-				TuplesOfStrings tmp = new TuplesOfStrings(2);
-				tmp.setIndex(0,res.getString(4)); //nombre del parametro...
-				tmp.setIndex(1, res.getString(7)); //tipo del parametro...
+				String tmp = "";
+				tmp+= res.getString(4)+" "; //nombre del parametro...
+				tmp+= res.getString(7); //tipo del parametro...
 				result.add(tmp);
 			}
 		} 
