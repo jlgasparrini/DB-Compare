@@ -63,8 +63,7 @@ public class Controller {
 				this.secondInstance = null;
 		}
 		if (status == 2) {
-			view.addText("ERROR: No pudo establecerse la conexion. La base de datos o el esquema no se encuentra.\""
-					+ DB + "\".");
+			view.addText("ERROR: No pudo establecerse la conexion. La base de datos o el esquema no se encuentra.\n");
 			c = null;
 		}
 	}

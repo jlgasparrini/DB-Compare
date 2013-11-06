@@ -1,7 +1,9 @@
 package utils;
 
 /**
- * Objeto: tuplas de tama�o N de tipo String
+ * @author Gasparrini - Torletti.
+ * 
+ * Objeto: tuplas de tamanio N de tipo String
  * El rango de las tuplas va de 0 ... N-1
  */
 public class TuplesOfStrings {
@@ -17,9 +19,9 @@ public class TuplesOfStrings {
 	}
 
 	/**
-	 * retorna el valor almacenado en la tupla en el 
+	 * Retorna el valor almacenado en la tupla en la posicion "index".
 	 * @param index "rango de 0 ... N-1"
-	 * @return
+	 * @return String
 	 */
 	public String getIndex(int index){
 		if(0 <= index && index < this.tuple.length)
@@ -28,11 +30,10 @@ public class TuplesOfStrings {
 	}
 	
 	/**
-	 * Almacena el Valor en la posicion index, en caso de rango 
-	 * invalido devuelve false
+	 * Almacena el Valor en la posicion "index", en caso de rango invalido devuelve false.
 	 * @param index "rango valido de 0 .. N-1"
 	 * @param value "String"
-	 * @return
+	 * @return boolean
 	 */
 	public boolean setIndex(int index, String value){
 		if(0 <= index && index < this.tuple.length){
@@ -43,7 +44,7 @@ public class TuplesOfStrings {
 	}
 	
 	/**
-	 * retorna la cantidad de elementos de la tupla
+	 * Retorna la cantidad de elementos de la n-upla
 	 * @return "int de 0 .. N-1"
 	 */
 	public int length(){
@@ -51,7 +52,7 @@ public class TuplesOfStrings {
 	}
 	
 	/**
-	 * retorna true si el elemento "o" es igual
+	 * Retorna true si el elemento "o" es igual componente a componente al objeto instanciado.
 	 */
 	public boolean equals(Object o){
 		if(o instanceof TuplesOfStrings){
@@ -66,7 +67,7 @@ public class TuplesOfStrings {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public String toString() {
 		String aux= "(";

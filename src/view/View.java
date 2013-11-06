@@ -110,7 +110,6 @@ public class View extends JFrame {
 		labelUsuario1.setColumns(10);
 
 		usuarioBaseDeDatos1 = new JTextField();
-		usuarioBaseDeDatos1.setText("postgres");
 		panelBaseDeDatos1.add(usuarioBaseDeDatos1);
 		usuarioBaseDeDatos1.setColumns(10);
 
@@ -121,7 +120,6 @@ public class View extends JFrame {
 		labelContrasenia.setColumns(10);
 
 		contraseniaBaseDeDatos1 = new JPasswordField();
-		contraseniaBaseDeDatos1.setText("root");
 		panelBaseDeDatos1.add(contraseniaBaseDeDatos1);
 
 		labelBaseDeDatos1 = new JTextField();
@@ -131,7 +129,6 @@ public class View extends JFrame {
 		labelBaseDeDatos1.setColumns(10);
 
 		baseDeDatos1 = new JTextField();
-		baseDeDatos1.setText("postgres");
 		panelBaseDeDatos1.add(baseDeDatos1);
 		baseDeDatos1.setColumns(10);
 
@@ -143,8 +140,6 @@ public class View extends JFrame {
 
 		esquema1 = new JTextField();
 		esquema1.setColumns(10);
-		esquema1.setText("centro_educativo");
-		usuarioBaseDeDatos1.setText("postgres");
 		panelBaseDeDatos1.add(esquema1);
 
 		JButton botonConectar1 = new JButton("CONECTAR");
@@ -178,7 +173,7 @@ public class View extends JFrame {
 		panelBaseDeDatos2.add(espacioEnBlanco2);
 		
 		labelHostDB2 = new JTextField();
-		labelHostDB2.setText("   HOST:");
+		labelHostDB2.setText("  HOST:");
 		labelHostDB2.setEditable(false);
 		labelHostDB2.setColumns(10);
 		panelBaseDeDatos2.add(labelHostDB2);
@@ -196,7 +191,6 @@ public class View extends JFrame {
 
 		usuarioBaseDeDatos2 = new JTextField();
 		usuarioBaseDeDatos2.setColumns(10);
-		usuarioBaseDeDatos2.setText("postgres");
 		panelBaseDeDatos2.add(usuarioBaseDeDatos2);
 
 		labelContrasenia2 = new JTextField();
@@ -206,7 +200,6 @@ public class View extends JFrame {
 		panelBaseDeDatos2.add(labelContrasenia2);
 
 		contraseniaBaseDeDatos2 = new JPasswordField();
-		contraseniaBaseDeDatos2.setText("root");
 		panelBaseDeDatos2.add(contraseniaBaseDeDatos2);
 
 		labelBaseDeDatos2 = new JTextField();
@@ -217,7 +210,6 @@ public class View extends JFrame {
 
 		baseDeDatos2 = new JTextField();
 		baseDeDatos2.setColumns(10);
-		baseDeDatos2.setText("postgres");
 		panelBaseDeDatos2.add(baseDeDatos2);
 
 		labelEsquema = new JTextField();
@@ -228,7 +220,6 @@ public class View extends JFrame {
 
 		esquema2 = new JTextField();
 		esquema2.setColumns(10);
-		esquema2.setText("educational_center");
 		panelBaseDeDatos2.add(esquema2);
 
 		espacioEnBlanco4 = new JLabel("");
