@@ -42,7 +42,9 @@ public class Comparator {
 	 */
 	public String runComparison() {
 		HashSet<String> schema1 = Queries.getTables(this.metaDataFirstDB, this.firstDB.getSchema());
-		HashSet<String> schema2 = Queries.getTables(this.metaDataFirstDB, this.firstDB.getSchema());
+		System.out.println("  schema1   "+schema1);
+		HashSet<String> schema2 = Queries.getTables(this.metaDataSecondDB, this.secondDB.getSchema());
+		System.out.println("  schema2   "+schema2);
 		String result = "";
 		result = compareTableNames(schema1, schema2);
 		if (!schema1.isEmpty()){
