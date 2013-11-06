@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS centro_educativo.Persona (
   apellido VARCHAR(45) NULL,
   direccion VARCHAR(45) NULL,
   CONSTRAINT DNI_pos CHECK (DNI>0),
-  PRIMARY KEY (DNI));
+  PRIMARY KEY (DNI),
+  UNIQUE (apellido));
 
 -- -----------------------------------------------------
 -- Tabla Empresa
@@ -67,7 +68,7 @@ CREATE DOMAIN EnteroMil AS INT
   CHECK ((value>0)AND(value<=1000));
 
 CREATE TABLE IF NOT EXISTS centro_educativo.Tipo_Curso (
- codigo_tipo EnteroMil NOT NULL,
+  codigo_tipo EnteroMil NOT NULL,
   duracion VARCHAR(45) NULL,
   programa VARCHAR(100) NULL,
   titulo VARCHAR(45) NULL,
@@ -78,9 +79,9 @@ CREATE TABLE IF NOT EXISTS centro_educativo.Tipo_Curso (
 -- -----------------------------------------------------
 CREATE TYPE TOrientacion AS ENUM ('Matematica', 'Lengua', 'Naturales', 'Sociales');
 
-CREATE TABLE IF NOT EXISTS centro_educativo.Curso (
+CREATE TABLE IF NOT EXISTS centro_educativo.curso (
   codigo_curso INT NOT NULL,
-  nombre VARCHAR(45) NULL,
+  nombre VARCHAR(45) UNIQUE NOT NULL,
   orientacion TOrientacion NULL,
   fecha_inicio DATE NULL,
   fecha_fin DATE NULL,
@@ -92,17 +93,21 @@ CREATE TABLE IF NOT EXISTS centro_educativo.Curso (
   CONSTRAINT DNI_CF_Profesor
     FOREIGN KEY (DNI) REFERENCES centro_educativo.Profesor (DNI));
 
+CREATE INDEX i_curso ON centro_educativo.curso(codigo_curso);
+
 -- -----------------------------------------------------
 -- Tabla Asiste
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS centro_educativo.Asiste (
+CREATE TABLE IF NOT EXISTS centro_educativo.asiste (
   DNI INT NOT NULL,
   codigo_curso INT NOT NULL,
   PRIMARY KEY (DNI, codigo_curso),
   CONSTRAINT DNI_CF_Alumno
-    FOREIGN KEY (DNI) REFERENCES centro_educativo.Alumno (DNI),
+    FOREIGN KEY (DNI) REFERENCES centro_educativo.alumno (DNI),
   CONSTRAINT codigoCurso_CF_Curso
-    FOREIGN KEY (codigo_curso) REFERENCES centro_educativo.Curso (codigo_curso));
+    FOREIGN KEY (codigo_curso) REFERENCES centro_educativo.curso (codigo_curso));
+
+CREATE INDEX i_asiste ON centro_educativo.asiste(codigo_curso);
 
 -- -----------------------------------------------------
 -- Tabla Auditoria_Curso
@@ -116,6 +121,8 @@ CREATE TABLE IF NOT EXISTS centro_educativo.Auditoria_Curso (
   fecha_fin_vieja DATE,
   fecha_actualizacion DATE,
   PRIMARY KEY (codigo_auditoria));
+
+CREATE INDEX i_auditoria ON centro_educativo.auditoria_curso(codigo_auditoria);
 
 CREATE OR REPLACE FUNCTION actualizacion_fecha_curso() RETURNS TRIGGER AS $trigger_auditoria_cursos$
 DECLARE
@@ -132,3 +139,12 @@ $trigger_auditoria_cursos$ LANGUAGE plpgsql;
 CREATE TRIGGER trigger_auditoria_cursos
   AFTER UPDATE ON centro_educativo.Curso
   FOR EACH ROW EXECUTE PROCEDURE actualizacion_fecha_curso();
+
+CREATE OR REPLACE FUNCTION sp_get_by_orientacion(TOrientacion) RETURNS text AS $$
+DECLARE
+   result TEXT;
+BEGIN
+   SELECT nombre INTO result FROM centro_educativo.curso WHERE orientacion=$1;
+   return result;
+END
+$$ LANGUAGE plpgsql STABLE;
