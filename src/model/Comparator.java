@@ -43,10 +43,11 @@ public class Comparator {
 	public String runComparison() {
 		HashSet<String> schema1 = Queries.getTables(this.metaDataFirstDB, this.firstDB.getSchema());
 		HashSet<String> schema2 = Queries.getTables(this.metaDataFirstDB, this.firstDB.getSchema());
-		String result = null;
+		String result = "";
 		result = compareTableNames(schema1, schema2);
 		if (!schema1.isEmpty()){
 			result += compareTablesEqualsName(schema1);
+			result += compareStoredProcedures();
 		}
 		if (result == "")
 			result = "Las bases de datos de los esquemas son iguales";
@@ -305,6 +306,7 @@ public class Comparator {
 		HashSet<String> proceduresNameSecondDB = Queries.getNamesOfStoredProcedures(this.metaDataSecondDB, this.secondDB.getSchema());
 		for (String string : proceduresNameFirstDB) {
 			boolean flagDiff = false;
+			String aux = "";
 			if (proceduresNameSecondDB.contains(string)){
 				//Entro solamente si se encuentra el mismo nombre de procedimiento en el otro esquema.
 				HashSet<String> profile1 = Queries.getProfilesOfStoreProcedures(this.metaDataFirstDB,this.firstDB.getSchema(), string);
@@ -325,8 +327,10 @@ public class Comparator {
 					}
 				if (!flagDiff)
 					result+= "- El procedimiento almacenado "+string+" es igual en los dos esquemas.";
-				else
-					result+= "- El procedimiento almacenado "+string+" .";
+				else{
+					aux+= "- El procedimiento almacenado "+string+" tiene las siguientes diferencias.";
+					result = aux + result;
+				}
 			}
 		}
 		return result;
