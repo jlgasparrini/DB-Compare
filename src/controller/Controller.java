@@ -21,13 +21,13 @@ public class Controller {
 		return instance;
 	}
 
-	public void connectBD(String user, String password, String DB, String schema, int instance) {
+	public void connectBD(String host, String user, String password, String DB, String schema, int instance) {
 		if (instance == 1) {
-			firstInstance = new DBConnection(user, password, DB, schema);
+			firstInstance = new DBConnection(host, user, password, DB, schema);
 			controlStatus(firstInstance);
 		}
 		if (instance == 2) {
-			secondInstance = new DBConnection(user, password, DB, schema);
+			secondInstance = new DBConnection(host, user, password, DB, schema);
 			controlStatus(secondInstance);
 		}
 	}
@@ -55,7 +55,7 @@ public class Controller {
 			view.addText("Base de Datos \"" + DB + "\" conectada al esquema "+c.getSchema()+".");
 		}
 		if (status == 1) {
-			view.addText("ERROR: No se encontro el esquema.");
+			view.addText("ERROR: Fallo al cargar el driver.");
 			if (c.getDb().compareTo(this.firstInstance.getDb()) == 0) {
 				this.firstInstance = null;
 			}
@@ -63,7 +63,7 @@ public class Controller {
 				this.secondInstance = null;
 		}
 		if (status == 2) {
-			view.addText("ERROR: No pudo establecerse la conexion con la base de datos \""
+			view.addText("ERROR: No pudo establecerse la conexion. La base de datos o el esquema no se encuentra.\""
 					+ DB + "\".");
 			c = null;
 		}
