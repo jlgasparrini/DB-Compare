@@ -18,6 +18,8 @@ public class Comparator {
 	DBConnection secondDB;
 	DatabaseMetaData metaDataFirstDB;
 	DatabaseMetaData metaDataSecondDB;
+	String origin1;
+	String origin2;
 
 	/**
 	 * Constructor de la clase comparador.
@@ -27,6 +29,8 @@ public class Comparator {
 	public Comparator(DBConnection db1, DBConnection db2) {
 		this.firstDB = db1;
 		this.secondDB = db2;
+		origin1 = "esquema " + firstDB.getSchema() + " de la base de datos " + firstDB.getDb();
+		origin2 = "esquema " + secondDB.getSchema() + " de la base de datos " + secondDB.getDb();
 		try {
 			//Traigo las metadatas.
 			this.metaDataFirstDB = db1.getConnection().getMetaData();
@@ -74,10 +78,10 @@ public class Comparator {
 			if (!schema2.contains(tableName)) {
 				schema1.remove(tableName);
 				if (!different) {
-					tmp += "El esquema " + this.firstDB.getSchema()	+ " contiene las tablas adicionales: \n";
+					tmp += "El " + origin1 + " contiene las tablas adicionales: \n";
 					different = true;
 				}
-				tmp += "- " + tableName + "\n";
+				tmp += "\t- " + tableName + "\n";
 			}
 		}
 		if (different) {
@@ -90,10 +94,10 @@ public class Comparator {
 			if (!schema1.contains(tableName2)) {
 				schema2.remove(tableName2);
 				if (!different) {
-					tmp += "El esquema " + this.secondDB.getSchema() + " contiene las tablas adicionales: \n";
+					tmp += "El " + origin2 + " contiene las tablas adicionales: \n";
 					different = true;
 				}
-				tmp += "- " + tableName2 + "\n";
+				tmp += "\t- " + tableName2 + "\n";
 
 			}
 		}
@@ -175,10 +179,10 @@ public class Comparator {
 				if (tupleOfAttribute1.getIndex(0).compareTo(tupleOfAttribute2.getIndex(0)) == 0) {
 					//comparo si tienen distinto tipo (columnas) o hacen referencia a columnas distintas (indices)
 					if (tupleOfAttribute1.getIndex(1).compareTo(tupleOfAttribute2.getIndex(1)) != 0) {
-						tmp += type == 1 ? "- La columna " : "- El indice ";
-						tmp	+= tupleOfAttribute1.getIndex(0) + " en el esquema " + firstDB.getSchema();
+						tmp += type == 1 ? "\t- La columna " : "\t- El indice ";
+						tmp	+= tupleOfAttribute1.getIndex(0) + " en el " + origin1;
 						tmp += type == 1 ? " el tipo es " : " es sobre la columna "; 
-						tmp += tupleOfAttribute1.getIndex(1) + " y en el esquema " + secondDB.getSchema(); 
+						tmp += tupleOfAttribute1.getIndex(1) + " y en el " + origin2; 
 						tmp += type == 1 ? " el tipo es " : " es sobre la columna ";
 						tmp += tupleOfAttribute2.getIndex(1) + "\n";
 					}
@@ -191,20 +195,20 @@ public class Comparator {
 		// informa las columnas o indices adicionales en el primer esquema
 		for (Iterator<TuplesOfStrings> iterator3 = table1.iterator(); iterator3.hasNext();) {
 			TuplesOfStrings tuple1 = (TuplesOfStrings) iterator3.next();
-			tmp += type == 1 ? "- La columna " : "- El indice ";
+			tmp += type == 1 ? "\t- La columna " : "\t- El indice ";
 			tmp += tuple1.getIndex(0);
 			tmp += type == 1 ? " de tipo " : " sobre la columna "; 
 			tmp += tuple1.getIndex(1)	+ " solo se encuentra en la tabla " + tableName
-					+ " del esquema " + firstDB.getSchema() + "\n";
+					+ " del " + origin1 + "\n";
 		}
 		// informa las columnas o indices adicionales en el segundo esquema
 		for (Iterator<TuplesOfStrings> iterator4 = table2.iterator(); iterator4.hasNext();) {
 			TuplesOfStrings tuple2 = (TuplesOfStrings) iterator4.next();
-			tmp += type == 1 ? "- La columna " : "- El indice ";
+			tmp += type == 1 ? "\t- La columna " : "\t- El indice ";
 			tmp += tuple2.getIndex(0);
 			tmp += type == 1 ? " de tipo " : " sobre la columna "; 
 			tmp += tuple2.getIndex(1)	+ " solo se encuentra en la tabla " + tableName
-					+ " del esquema " + secondDB.getSchema() + "\n";
+					+ " del " + origin2 + "\n";
 		}
 		return tmp;
 	}
@@ -236,13 +240,13 @@ public class Comparator {
 				table2.remove(key1);
 			}else //si se encuetra solo en el primer esquema, lo informo
 				tmp += "\t- La clave "+ keyType +" "+ key1 + " de la tabla " + tableName 
-					+ " solo se encuentra en el esquema " + firstDB.getSchema() + "\n";
+					+ " solo se encuentra en el " + origin1 + "\n";
 		}
 		//informo las claves primarias que se encuentran unicamente en el segundo esquema
 		for (Iterator<String> iterator = table2.iterator(); iterator.hasNext();) {
 			String key2 = (String) iterator.next();
 			tmp += "\t- La clave "+ keyType +" "+ key2 + " de la tabla " + tableName 
-					+ " solo se encuentra en el esquema " + secondDB.getSchema() + "\n";
+					+ " solo se encuentra en el " + origin2 + "\n";
 		}
 		return tmp;
 	}
@@ -279,44 +283,44 @@ public class Comparator {
 				if (tupleOfAttribute1.getIndex(0).compareTo(tupleOfAttribute2.getIndex(0)) == 0) {
 					//comparo si las claves son de distintos atributo 
 					if (tupleOfAttribute1.getIndex(1).compareTo(tupleOfAttribute2.getIndex(1)) != 0){
-						differencesSchemaFirst += " el atributo es " + tupleOfAttribute1.getIndex(1);
-						differencesSchemaSecond += " el atributo es " + tupleOfAttribute2.getIndex(1);
+						differencesSchemaFirst += "\t\t- El atributo es " + tupleOfAttribute1.getIndex(1) + "\n";
+						differencesSchemaSecond += "\t\t- El atributo es " + tupleOfAttribute2.getIndex(1) + "\n";
 						different = true;
 					}
 					//comparo si las claves hacen referecia a distintas tablas
 					if (tupleOfAttribute1.getIndex(2).compareTo(tupleOfAttribute2.getIndex(2)) != 0){
-						if(different){
-							differencesSchemaFirst += ",";
-							differencesSchemaSecond += ",";
-						}
-						differencesSchemaFirst += " la tabla referenciada es " + tupleOfAttribute1.getIndex(2);
-						differencesSchemaSecond += " la tabla referenciada es " + tupleOfAttribute2.getIndex(2);
+						differencesSchemaFirst += "\t\t- La tabla referenciada es " + tupleOfAttribute1.getIndex(2) + "\n";
+						differencesSchemaSecond += "\t\t- La tabla referenciada es " + tupleOfAttribute2.getIndex(2) + "\n";
 						different = true;
 					}
 					//comparo si las claves hacen referecia a distintos atributos de las tablas refer
 					if (tupleOfAttribute1.getIndex(3).compareTo(tupleOfAttribute2.getIndex(3)) != 0){
-						if(different){
-							differencesSchemaFirst += " y";
-							differencesSchemaSecond += " y";
-						}
-						differencesSchemaFirst += " el atributo referenciado es " + tupleOfAttribute1.getIndex(3);
-						differencesSchemaSecond += " el atributo referenciado es " + tupleOfAttribute2.getIndex(3);
+						differencesSchemaFirst += "\t\t- El atributo referenciado es " + tupleOfAttribute1.getIndex(3) + "\n";
+						differencesSchemaSecond += "\t\t- El atributo referenciado es " + tupleOfAttribute2.getIndex(3) + "\n";
+						different = true;
+					}
+					if (tupleOfAttribute1.getIndex(4).compareTo(tupleOfAttribute2.getIndex(4)) != 0){
+						differencesSchemaFirst += "\t\t- La accion de actualizacion es " + actionForeignKey(tupleOfAttribute1.getIndex(4)) + "\n";
+						differencesSchemaSecond += "\t\t- La accion de actualizacion es " + actionForeignKey(tupleOfAttribute2.getIndex(4)) + "\n";
+						different = true;
+					}
+					if (tupleOfAttribute1.getIndex(5).compareTo(tupleOfAttribute2.getIndex(5)) != 0){
+						differencesSchemaFirst += "\t\t- La accion de eliminacion es " + actionForeignKey(tupleOfAttribute1.getIndex(4)) + "\n";
+						differencesSchemaSecond += "\t\t- La accion de eliminacion es " + actionForeignKey(tupleOfAttribute2.getIndex(4)) + "\n";
 						different = true;
 					}
 					//notifico las diferencias
 					if(different){
 						tmp += "- La clave foranea " + tupleOfAttribute1.getIndex(0)
-								+ " de la tabla " + tableName
-								+ " en el esquema " + firstDB.getSchema()
-								+ differencesSchemaFirst
-								+ " y en el esquema " + secondDB.getSchema()
-								+ differencesSchemaSecond + "\n";
+								+ " de la tabla " + tableName + " en el " 
+								+ origin1 + ":\n" +differencesSchemaFirst + "\n y en el " 
+								+ origin2 +":\n"+differencesSchemaSecond + "\n";
+						different = false;
 					}
 					//elimino las claves foraneas de ambos conjuntos, porque ya estan comparados
 					table1.remove(tupleOfAttribute1);
 					table2.remove(tupleOfAttribute2);
 					//limpio las variables utilizadas para notificar cambios
-					different = false;
 					differencesSchemaFirst = "";
 					differencesSchemaSecond = "";
 				}
@@ -326,11 +330,11 @@ public class Comparator {
 		for (Iterator<TuplesOfStrings> iterator3 = table1.iterator(); iterator3.hasNext();) {
 			TuplesOfStrings tuple1 = (TuplesOfStrings) iterator3.next();
 			tmp += "\t- La clave foranea " + tuple1.getIndex(0)
-					+ " del atributo: " + tuple1.getIndex(1)
+					+ " del atributo " + tuple1.getIndex(1)
 					+ " que hace referencia a la tabla " + tuple1.getIndex(2)
 					+ " del campo " + tuple1.getIndex(3) 
 					+ " solo se encuentra en la tabla " + tableName
-					+ " del esquema " + firstDB.getSchema() + "\n";
+					+ " del " + origin1 + "\n";
 		}
 		// save the columns with distinct name in the second schema
 		for (Iterator<TuplesOfStrings> iterator4 = table2.iterator(); iterator4.hasNext();) {
@@ -340,7 +344,7 @@ public class Comparator {
 					+ " que hace referencia a la tabla " + tuple2.getIndex(2)
 					+ " del campo " + tuple2.getIndex(3) 
 					+ " solo se encuentra en la tabla " + tableName
-					+ " del esquema " + firstDB.getSchema() + "\n";
+					+ " del " + origin2 + "\n";
 		}
 		table1.clear();
 		table2.clear();
@@ -360,11 +364,11 @@ public class Comparator {
 				HashSet<String> profile2 = Queries.getProfilesOfStoreProcedures(this.metaDataSecondDB,this.secondDB.getSchema(), string);
 				//Verifico si hay diferencias en el perfil de la funcion.
 				if (profile1.size() > profile2.size()) {
-					result+= "\t- En el esquema "+this.firstDB.getSchema()+" el procedimiento tiene mayor cantidad de parametros.\n";
+					result+= "\t- En el "+ origin1 +" el procedimiento tiene mayor cantidad de parametros.\n";
 					flagDiff = true;
 				}
 				if (profile1.size() < profile2.size()) {
-					result+= "\t- En el esquema "+this.secondDB.getSchema()+" el procedimiento tiene mayor cantidad de parametros.\n";
+					result+= "\t- En el "+ origin2 +" el procedimiento tiene mayor cantidad de parametros.\n";
 					flagDiff = true;
 				}
 				if (profile1.size() == profile2.size() && !profile1.equals(profile2)) {
@@ -398,24 +402,24 @@ public class Comparator {
 				if (tuple1.getIndex(0).compareTo(tuple2.getIndex(0)) == 0) {
 					//comparo si las claves son de distintos atributo 
 					if (tuple1.getIndex(1).compareTo(tuple2.getIndex(1)) != 0)
-						differences += "\t - En el esquema " + firstDB.getSchema()
+						differences += "\t - En el " + origin1
 										+ "al ejecucion es " + tuple1.getIndex(1)
-										+ " y en el esquema " + secondDB.getSchema()
+										+ " y en el " + origin2
 										+ "la ejecucion es " + tuple2.getIndex(1);
 					if (tuple1.getIndex(2).compareTo(tuple2.getIndex(2)) != 0)
-						differences += "\t - En el esquema " + firstDB.getSchema()
+						differences += "\t - En el " + origin1
 										+ " se realiza la operacion " + tuple1.getIndex(2)
-										+ " y en el esquema " + secondDB.getSchema()
+										+ " y en el " + origin2
 										+ "se realiza la operacion " + tuple2.getIndex(2);
 					if (tuple1.getIndex(3).compareTo(tuple2.getIndex(3)) != 0)
-						differences += "\t - En el esquema " + firstDB.getSchema()
+						differences += "\t - En el " + origin1
 										+ " se realiza la operacion sobre la tabla " + tuple1.getIndex(3)
-										+ " y en el esquema " + secondDB.getSchema()
+										+ " y en el " + origin2
 										+ " se realiza la operacion sobre la tabla " + tuple2.getIndex(3);
 					if (tuple1.getIndex(4).compareTo(tuple2.getIndex(4)) != 0)
-						differences += "\t - En el esquema " + firstDB.getSchema()
+						differences += "\t - En el " + origin1
 										+ " el trigger realiza la accion " + tuple1.getIndex(4)
-										+ " y en el esquema " + secondDB.getSchema()
+										+ " y en el " + origin2
 										+ " el trigger realiza la accion " + tuple2.getIndex(4);
 					if(differences.compareTo("") != 0){
 						tmp += "El trigger " + tuple1.getIndex(0) + " que se encuentra en ambos esquemas tiene de diferente: \n";
@@ -427,6 +431,17 @@ public class Comparator {
 			}
 		}
 		return tmp;
+	}
+	
+	private String actionForeignKey(String action) {
+		switch (action) {
+		case "0": return "cascade";
+		case "1": return "restrict";
+		case "2": return "set null";
+		case "3": return "no action";
+		case "4": return "set default";
+		}
+		return null;
 	}
 }
 

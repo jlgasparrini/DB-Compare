@@ -126,11 +126,13 @@ public class Queries {
 		try {
 			ResultSet result = conn.getImportedKeys(conn.getConnection().getCatalog(), schema, tableName);
 			while (result.next()) {
-				TuplesOfStrings tmp = new TuplesOfStrings(4);
+				TuplesOfStrings tmp = new TuplesOfStrings(6);
 				tmp.setIndex(0, result.getString(12)); //nombre de constraign
 				tmp.setIndex(1, result.getString(8)); //atributo tuyo 
 				tmp.setIndex(2, result.getString(3)); // tabla referencia
 				tmp.setIndex(3, result.getString(4)); // atributo referencia
+				tmp.setIndex(4, result.getString("UPDATE_RULE")); // regla de actualizacion
+				tmp.setIndex(5, result.getString("DELETE_RULE")); // regla de eliminacion
 				res.add(tmp);
 			}
 		} 

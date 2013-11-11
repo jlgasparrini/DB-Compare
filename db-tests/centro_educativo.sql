@@ -1,4 +1,4 @@
--- -----------------------------------------------------
+﻿-- -----------------------------------------------------
 -- Creo esquema centro_educativo
 -- -----------------------------------------------------
 CREATE SCHEMA centro_educativo;
@@ -63,9 +63,9 @@ CREATE TABLE IF NOT EXISTS centro_educativo.Profesor (
 -- -----------------------------------------------------
 -- Tabla Tipo_Curso
 -- -----------------------------------------------------
-CREATE DOMAIN EnteroMil AS INT 
-  DEFAULT 0
-  CHECK ((value>0)AND(value<=1000));
+--CREATE DOMAIN EnteroMilAS INT 
+--DEFAULT 0
+--CHECK ((value>0)AND(value<=1000));
 
 CREATE TABLE IF NOT EXISTS centro_educativo.Tipo_Curso (
   codigo_tipo EnteroMil NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS centro_educativo.asiste (
   CONSTRAINT DNI_CF_Alumno
     FOREIGN KEY (DNI) REFERENCES centro_educativo.alumno (DNI),
   CONSTRAINT codigoCurso_CF_Curso
-    FOREIGN KEY (codigo_curso) REFERENCES centro_educativo.curso (codigo_curso));
+    FOREIGN KEY (codigo_curso) REFERENCES centro_educativo.curso (codigo_curso) On delete cascade);
 
 CREATE INDEX i_asiste ON centro_educativo.asiste(codigo_curso);
 

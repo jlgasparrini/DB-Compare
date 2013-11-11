@@ -1,4 +1,4 @@
--- -----------------------------------------------------
+﻿-- -----------------------------------------------------
 -- Create schema "educational center".                    --
 -- -----------------------------------------------------
 CREATE SCHEMA educational_center;
@@ -63,9 +63,9 @@ CREATE TABLE IF NOT EXISTS educational_center.professor (
 -- -----------------------------------------------------
 -- Table Course_Type
 -- -----------------------------------------------------
-CREATE DOMAIN thousand AS INT 
-  DEFAULT 0
-  CHECK ((value>0)AND(value<=1000));
+--CREATE DOMAIN thousand AS INT 
+--DEFAULT 0
+--CHECK ((value>0)AND(value<=1000));
 
 CREATE TABLE IF NOT EXISTS educational_center.Tipo_course (
   code_type thousand NOT NULL,
